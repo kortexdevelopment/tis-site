@@ -7,13 +7,17 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Container from '@material-ui/core/Container';
+import { useHistory } from "react-router-dom";
 
 import logo from '../media/logo.png';
 
-// A5C0F3
-// 3973E5
-// FF0000
-export default function MediaCard() {
+// 3973E5 primary
+// A5C0F3 secondary
+// FF0000 red
+
+export default function Login() {
+
+    let history = useHistory();
 
     const [user, SetUser] = React.useState('');
     const [pass, SetPass] = React.useState('');
@@ -21,8 +25,8 @@ export default function MediaCard() {
 
     const handleLogin = async() =>
     {
-        console.log(`valor1 = ${user} & valor2 = ${pass}`);
-        DoWait(true);
+        history.push("/main");
+        DoWait(false);
     }
 
     return (
@@ -30,7 +34,7 @@ export default function MediaCard() {
         <Container
             style={{
                 display: 'flex',
-                marginTop: '10%',
+                marginTop: '5%',
                 justifyContent: 'center',
             }}
         >
