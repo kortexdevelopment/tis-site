@@ -15,6 +15,10 @@ import logo from '../media/logo.png';
 
 import Info from './info';
 import AgencyProfile from './agency/profile';
+import AgencyUsers from './agency/users';
+
+import ClientAgenda from './clients/agenda';
+import ClientProfile from './clients/profile';
 
 // 3973E5 primary
 // A5C0F3 secondary
@@ -79,7 +83,6 @@ export default function Main() {
                     flex:'10%',
                     backgroundColor: '#3973E5',
                     height: scrH,
-                    maxHeight: scrH,
                 }}
             >
                 <img 
@@ -148,6 +151,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('AgencyUsers')}
                                 >
                                     Agents
                                 </Button>
@@ -185,6 +189,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientAgenda')}
                                 >
                                     Agenda
                                 </Button>
@@ -223,6 +228,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientProfile')}
                                 >
                                     Profile
                                 </Button>
@@ -303,6 +309,9 @@ export default function Main() {
                 square
                 style={{
                     flex:'90%',
+                    height: scrH,
+                    minHeight: scrH,
+                    overflow: 'auto'
                 }}
             >
                 {action === '' &&
@@ -314,8 +323,21 @@ export default function Main() {
                 (
                     <AgencyProfile />
                 )}
+                
+                {action === 'AgencyUsers' &&
+                (
+                    <AgencyUsers />
+                )}
 
+                {action === 'ClientAgenda' &&
+                (
+                    <ClientAgenda />
+                )}
 
+                {action === 'ClientProfile' &&
+                (
+                    <ClientProfile />
+                )}
             </Box>
 
         </Box>
