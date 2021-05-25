@@ -19,7 +19,12 @@ import AgencyUsers from './agency/users';
 
 import ClientAgenda from './clients/agenda';
 import ClientProfile from './clients/profile';
-
+import ClientApp from './clients/app';
+import ClientCoverage from './clients/coverages';
+import ClientVehicles from './clients/vehicles';
+import ClientDrivers from './clients/drivers';
+import ClientPolicies from './clients/policies';
+import ClientDocs from './clients/documents';
 // 3973E5 primary
 // A5C0F3 secondary
 // FF0000 red
@@ -237,6 +242,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientApp')}
                                 >
                                     Mobile App
                                 </Button>
@@ -245,6 +251,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientCoverage')}
                                 >
                                     Coverages
                                 </Button>
@@ -253,6 +260,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientVehicles')}
                                 >
                                     Vehicles
                                 </Button>
@@ -261,6 +269,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientDrivers')}
                                 >
                                     Drivers
                                 </Button>
@@ -269,6 +278,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientPolicies')}
                                 >
                                     Policies
                                 </Button>
@@ -277,6 +287,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientDocs')}
                                 >
                                     Documents
                                 </Button>
@@ -338,6 +349,37 @@ export default function Main() {
                 (
                     <ClientProfile />
                 )}
+
+                {action === 'ClientApp' &&
+                (
+                    <ClientApp />
+                )}
+
+                {action === 'ClientCoverage' &&
+                (
+                    <ClientCoverage />
+                )}
+
+                {action === 'ClientVehicles' &&
+                (
+                    <ClientVehicles />
+                )}
+                
+                {action === 'ClientDrivers' &&
+                (
+                    <ClientDrivers />
+                )}
+                
+                {action === 'ClientPolicies' &&
+                (
+                    <ClientPolicies />
+                )}
+
+                {action === 'ClientDocs' &&
+                (
+                    <ClientDocs />
+                )}
+
             </Box>
 
         </Box>

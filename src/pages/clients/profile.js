@@ -13,6 +13,9 @@ import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
+import Switch from '@material-ui/core/Switch';
+import SaveIcon from '@material-ui/icons/Save';
+import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,6 +54,8 @@ export default function ClientProfile() {
                     <Typography variant="h6" color="inherit">
                         CLIENT PROFILE
                     </Typography>
+
+                    
                 </Toolbar>
             </AppBar>
         </div>
@@ -59,7 +64,13 @@ export default function ClientProfile() {
             className={classes.containerRoot}
         >
             
-            <AppBar position="static">
+            <AppBar 
+                position="static"
+                style={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                }}
+            >
                 <Tabs   
                     value={nav} 
                     onChange={handleTabs}
@@ -71,7 +82,33 @@ export default function ClientProfile() {
                     <Tab label="Adresses Info"/>
                     <Tab label="Filing Info" />
                     <Tab label="Additional Info" />
+                    
                 </Tabs>
+                <Box
+                    style={{
+                        display: 'flex',
+                        flex: 1,
+                        justifyContent: 'flex-end',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        backgroundColor: '#3973E5',
+                    }}
+                >
+                    <Typography color="inherit">
+                        Edit Info
+                    </Typography>
+                    <Switch
+                        color='secondary'
+                    />
+                    <IconButton
+                        style={{
+                            color: '#FFFFFF'
+                        }}
+                    >
+                        <SaveIcon 
+                        />
+                    </IconButton>
+                </Box>
             </AppBar>
             
             {nav === 0 &&
