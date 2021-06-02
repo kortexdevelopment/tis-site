@@ -10,10 +10,11 @@ import Container from '@material-ui/core/Container';
 import { useHistory } from "react-router-dom";
 
 import logo from '../media/logo.png';
-
 // 3973E5 primary
 // A5C0F3 secondary
 // FF0000 red
+
+import * as API from '../lib/api';
 
 export default function Login() {
 
@@ -25,7 +26,52 @@ export default function Login() {
 
     const handleLogin = async() =>
     {
+        DoWait(true);
+
+        if(![user, pass].every(Boolean))
+        {
+            alert('All fields are requiered');
+            DoWait(false);
+            return;
+        }
+        
+        try{
+            var LoginResult = await verifyLogin();
+        }
+        catch(e){
+            LoginResult = undefined;
+        }
+
+        if(LoginResult === undefined || LoginResult.error){
+            alert('Invalid credentials. Please verify information');
+            DoWait(false);
+            return;
+        }
+
+        console.log(LoginResult);
+        window.localStorage.setItem('session', JSON.stringify(LoginResult));
+
+        clearInputs();
         history.push("/main");
+    }
+
+    const verifyLogin = async() => {
+        try{
+            var result = await API.agencyLogin(user, pass);
+        }catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            return undefined;
+        }
+
+        return result;
+    }
+
+    const clearInputs = async() =>{
+        SetUser('');
+        SetPass('');
         DoWait(false);
     }
 

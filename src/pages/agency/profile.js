@@ -7,6 +7,9 @@ import Container from '@material-ui/core/Container';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+import {Profile} from '../../controllers/agency';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,7 +38,39 @@ const useStyles = makeStyles((theme) => ({
 // A5C0F3 secondary
 // FF0000 red
 export default function AgencyProfile() {
-  const classes = useStyles();
+    const classes = useStyles();
+    
+    const session = JSON.parse(window.localStorage.getItem('session'));
+    const [profileInfo, setInfo] = React.useState(undefined);
+    const [loadInfo, isLoad] = React.useState(true);
+    const [loadError, didError] = React.useState(false);
+
+    React.useEffect(() =>{
+        if(!loadInfo)
+        {
+            return;
+        }
+
+        handleLoading();
+    },[]);
+
+    const handleLoading = async() => {
+        try{
+            var response = await Profile(session.compId);
+        }
+        catch(e){
+            console.error(`Error loading agency profile.\n${e}`);
+            response = undefined;
+        }
+
+        if(response === undefined){
+            didError(true);
+            return;
+        }
+
+        setInfo(response);
+        isLoad(false);
+    }
 
   return (
     <>
@@ -54,167 +89,212 @@ export default function AgencyProfile() {
                 </Toolbar>
             </AppBar>
         </div>
+        
+        {loadInfo && (
+            <>
+                <Box
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        height: 500,
+                    }}
+                >
 
-        <Container
-            className={classes.containerRoot}
-        >
+                    {!loadError && (
+                        <CircularProgress 
+                            style={{
+                                color:'#3973E5'
+                            }}
+                        />
+                    )}
+                    
+                    <Typography 
+                        variant="h6"
+                        style={{
+                            color:'#3973E5'
+                        }}
+                    >
+                        {!loadError ? 'Loading agency information...':'Someting whent wrong try again later...'}
+                    </Typography>
+                </Box>
+            </>
+        )}
 
-            <Typography 
-                variant='h6'
-                style={{
-                    color:"#3973E5"
-                }}
+        {!loadInfo && (
+            <>
+            <Container
+                className={classes.containerRoot}
             >
-                GENERAL INFO
-            </Typography>
 
-            <Divider 
-                style={{
-                    marginBottom:20,
-                }}
-            />
+                <Typography 
+                    variant='h6'
+                    style={{
+                        color:"#3973E5"
+                    }}
+                >
+                    GENERAL INFO
+                </Typography>
 
-            <Box
-                style={{
-                    width:'100%'
-                }}
+                <Divider 
+                    style={{
+                        marginBottom:20,
+                    }}
+                />
+
+                <Box
+                    style={{
+                        width:'100%'
+                    }}
+                >
+                    <TextField 
+                        className={classes.fieldSpacing}
+                        label="AGENCY NAME"
+                        inputProps={{
+                            readOnly:true,
+                        }} 
+                        value={profileInfo?.agencyName}
+                    />
+
+                    <TextField 
+                        className={classes.fieldSpacing}
+                        label="PRODUCER NAME"
+                        inputProps={{
+                            readOnly:true,
+                        }} 
+                        value={profileInfo?.producerName}
+                    />
+
+                    <TextField 
+                        className={classes.fieldSpacing}
+                        label="LICENSE NUMBER" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.license}
+                    />
+                </Box>
+
+            </Container>
+
+            <Container
+                className={classes.containerRoot}
             >
-                <TextField 
-                    className={classes.fieldSpacing}
-                    label="PRODUCER NAME"
-                    inputProps={{
-                        readOnly:true,
-                    }} 
-                    value={'Carlos Reyes'}
-                />
-
-                <TextField 
-                    className={classes.fieldSpacing}
-                    label="LICENSE NUMBER" 
-                    inputProps={{
-                        readOnly:true,
+                
+                <Typography 
+                    variant='h6'
+                    style={{
+                        color:"#3973E5"
                     }}
-                    value={'CA65465TLS'}
+                >
+                    CONTACT INFO
+                </Typography>
+
+                <Divider 
+                    style={{
+                        marginBottom:20,
+                    }}
                 />
-            </Box>
 
-        </Container>
+                <Box
+                    style={{
+                        width:'100%'
+                    }}
+                >
+                    <TextField 
+                        className={classes.fieldSpacing}
+                        label="PHONE NUMBER" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.phoneNumber}
+                    />
 
-        <Container
-            className={classes.containerRoot}
-        >
-            
-            <Typography 
-                variant='h6'
-                style={{
-                    color:"#3973E5"
-                }}
+                    <TextField 
+                        className={classes.fieldSpacing}
+                        label="FAX NUMBER" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.faxNumber}
+                    />
+
+                    <TextField 
+                        className={classes.fieldSpacing}
+                        label="E-MAIL NUMBER" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.email}
+                    />
+                </Box>
+            </Container>
+
+        
+            <Container
+                className={classes.containerRoot}
             >
-                CONTACT INFO
-            </Typography>
 
-            <Divider 
-                style={{
-                    marginBottom:20,
-                }}
-            />
-
-            <Box
-                style={{
-                    width:'100%'
-                }}
-            >
-                <TextField 
-                    className={classes.fieldSpacing}
-                    label="PHONE NUMBER" 
-                    inputProps={{
-                        readOnly:true,
+                <Typography 
+                    variant='h6'
+                    style={{
+                        color:"#3973E5"
                     }}
-                    value={'664 262 2625'}
+                >
+                    LOCATION INFO
+                </Typography>
+
+                <Divider 
+                    style={{
+                        marginBottom:20,
+                    }}
                 />
 
-                <TextField 
-                    className={classes.fieldSpacing}
-                    label="FAX NUMBER" 
-                    inputProps={{
-                        readOnly:true,
+                <Box
+                    style={{
+                        width:'100%'
                     }}
-                    value={'664 262 2625'}
-                />
+                >
+                    <TextField 
+                        className={classes.fieldSpacingB}
+                        label="ADDRESS" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.address}
+                    />
 
-                <TextField 
-                    className={classes.fieldSpacing}
-                    label="E-MAIL NUMBER" 
-                    inputProps={{
-                        readOnly:true,
-                    }}
-                    value={'carlos@mail.com'}
-                />
-            </Box>
-        </Container>
+                    <TextField 
+                        className={classes.fieldSpacingB}
+                        label="CITY" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.city}
+                    />
 
-       
-        <Container
-            className={classes.containerRoot}
-        >
+                    <TextField 
+                        className={classes.fieldSpacingB}
+                        label="STATE" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.state}
+                    />
 
-            <Typography 
-                variant='h6'
-                style={{
-                    color:"#3973E5"
-                }}
-            >
-                LOCATION INFO
-            </Typography>
-
-            <Divider 
-                style={{
-                    marginBottom:20,
-                }}
-            />
-
-            <Box
-                style={{
-                    width:'100%'
-                }}
-            >
-                <TextField 
-                    className={classes.fieldSpacingB}
-                    label="ADDRESS" 
-                    inputProps={{
-                        readOnly:true,
-                    }}
-                    value={'Fake St.'}
-                />
-
-                <TextField 
-                    className={classes.fieldSpacingB}
-                    label="CITY" 
-                    inputProps={{
-                        readOnly:true,
-                    }}
-                    value={'City'}
-                />
-
-                <TextField 
-                    className={classes.fieldSpacingB}
-                    label="STATE" 
-                    inputProps={{
-                        readOnly:true,
-                    }}
-                    value={'State'}
-                />
-
-                <TextField 
-                    className={classes.fieldSpacingB}
-                    label="ZIP" 
-                    inputProps={{
-                        readOnly:true,
-                    }}
-                    value={'22206'}
-                />
-            </Box>
-        </Container>
+                    <TextField 
+                        className={classes.fieldSpacingB}
+                        label="ZIP" 
+                        inputProps={{
+                            readOnly:true,
+                        }}
+                        value={profileInfo?.zip}
+                    />
+                </Box>
+            </Container>
+            </>
+        )}
 
     </>
   );
