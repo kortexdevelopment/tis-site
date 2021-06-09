@@ -125,6 +125,8 @@ export default function AgencyUsers() {
 
     const createUser = async() =>
     {
+        console.log(`Creating new agent Name:${newName} Mail:${newMail} Pass:${newPass} Level:${newLevel}`);
+        
         if(![newName, newMail, newPass, newLevel].every(Boolean))
         {
             alert('All parameters are required');

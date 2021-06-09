@@ -55,7 +55,7 @@ export const Agents = async(id) =>{
             name: agents[a][2],
             mail: agents[a][3],
             pass: agents[a][4],
-            level: agents[a][5] === 1 ? 'Normal User' : 'Admin'
+            level: Number(agents[a][5]) === 1 ? 'Normal Agent' : 'Admin Agent'
         }
 
         results.push(agent);
