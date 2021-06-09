@@ -20,108 +20,47 @@ export const agencyData = async(id) => {
   return data;
 }
 
-// exports.clientData = async (client_id) => {
-//   let endpoint = `clientData.php`;
+export const agencyAgents = async(id) => {
+  let endpoint = `agencyAgents.php`;
 
-//   let urlParams = `?client_id=${client_id}`
+  let urlParams = `?company_id=${id}`
 
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
 
-//   return data;
-// }
+  return data;
+}
 
-// exports.clientCompanies = async (cid) => {
-//   let endpoint = `clientCompaniesList.php`;
+export const agencyRemoveAgent = async(id) => {
+  let endpoint = `agencyRemoveAgent.php`;
 
-//   let urlParams = `?cid=${cid}`
+  let urlParams = `?uid=${id}`
 
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
 
-//   return data;
-// }
+  return data;
+}
 
-// exports.clientCertificates = async (cid) => {
-//   let endpoint = `clientCertificates.php`;
+export const agencyClients = async(id) => {
+  let endpoint = `agencyClients.php`;
 
-//   let urlParams = `?cid=${cid}`
+  let urlParams = `?company_id=${id}`
 
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
 
-//   return data;
-// }
+  return data;
+}
 
-// exports.clientLibrary = async (cid) => {
-//   let endpoint = `clientLibrary.php`;
+export const agencyNewAgent = async (cid, name, pass, mail, level) => {
+  let endpoint = `agencyNewAgent.php`;
 
-//   let urlParams = `?cid=${cid}`
-
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
-
-//   return data;
-// }
-
-// exports.deleteCompany = async (cid) => {
-//   let endpoint = `deleteCompany.php`;
-
-//   let urlParams = `?cid=${cid}`
-
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
-
-//   return data;
-// }
-
-// exports.createCertLog = async (cid) => {
-//   let endpoint = `createCertLog.php`;
-
-//   let urlParams = `?cid=${cid}`
-
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
-
-//   return data;
-// }
-
-// exports.createCertPdf = async (lid) => {
-//   let endpoint = `createCertPdf.php`;
-
-//   let urlParams = `?lid=${lid}`
-
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
-
-//   return data;
-// }
-
-// exports.sendCertMail = async (to, pid) => {
-//   let endpoint = `sendCertMail.php`;
-
-//   let urlParams = `?to=${to}&pid=${pid}`
-
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
-
-//   return data;
-// }
-
-// exports.sendFileMail = async (to, file) => {
-//   let endpoint = `sendFileMail.php`;
-
-//   let urlParams = `?to=${to}&file=${file}`
-
-//   let data = HTTP.GET(`${endpoint}${urlParams}`);
-
-//   return data;
-// }
-
-// exports.createCompany = async (cid, name, street, city, state, zip) => {
-//   let endpoint = `createCompany.php`;
-
-//   const postData = {}
-//   postData['cid'] = cid;
-//   postData['name'] = name;
-//   postData['street'] = street;
-//   postData['city'] = city;
-//   postData['state'] = state;
-//   postData['zip'] = zip;
+  const postData = {}
+  postData['cid'] = cid;
+  postData['name'] = name;
+  postData['mail'] = mail;
+  postData['pass'] = pass;
+  postData['level'] = level;
   
-//   let data = HTTP.POST(endpoint, postData);
+  let data = HTTP.POST(endpoint, postData);
 
-//   return data;
-// }
+  return data;
+}

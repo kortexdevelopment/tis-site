@@ -7,6 +7,7 @@ import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import { DataGrid } from '@material-ui/data-grid';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import IconButton from '@material-ui/core/IconButton';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
@@ -18,6 +19,8 @@ import TextField from '@material-ui/core/TextField';
 
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
+
+import {Agenda} from '../../controllers/agency';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -50,24 +53,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const rows = [
-  { id: 1, nameF: 'Carlos', nameL: 'Reyes', bsn:'Kortex Software', phone:'664 2622625', mail: 'carlos@mail.com'},
-  { id: 2, nameF: 'Carlos', nameL: 'Reyes', bsn:'Kortex Software', phone:'664 2622625', mail: 'carlos@mail.com'},
-  { id: 3, nameF: 'Carlos', nameL: 'Reyes', bsn:'Kortex Software', phone:'664 2622625', mail: 'carlos@mail.com'},
-  { id: 4, nameF: 'Carlos', nameL: 'Reyes', bsn:'Kortex Software', phone:'664 2622625', mail: 'carlos@mail.com'},
-  { id: 5, nameF: 'Carlos', nameL: 'Reyes', bsn:'Kortex Software', phone:'664 2622625', mail: 'carlos@mail.com'},
-  { id: 6, nameF: 'Carlos', nameL: 'Reyes', bsn:'Kortex Software', phone:'664 2622625', mail: 'carlos@mail.com'},
-];
-
-
-// 3973E5 primary
-// A5C0F3 secondary
-// FF0000 red
-
 export default function ClientAgenda() {
-  const classes = useStyles();
+    const classes = useStyles();
+    const session = JSON.parse(window.localStorage.getItem('session')); //compId userTp
 
-  const [newClient, doNew] = React.useState(false);
+    const [agenda, setAgenda] = React.useState([]);
+    const [loadAgenda, isLoading] = React.useState(true);
+    const [loadError, didError] = React.useState(false);
+
+    const [newClient, doNew] = React.useState(false);
+
+    React.useEffect(() => {
+        if(!loadAgenda){
+            return;
+        }
+        
+        handleLoading();
+    });
 
     React.useEffect(() => {
         if(newClient === false)
@@ -75,6 +77,23 @@ export default function ClientAgenda() {
             //Clear info
         }
     }, [newClient]);
+
+    const handleLoading = async() =>{
+        try{
+            var results = await Agenda(session.compId);
+        }
+        catch(e){
+            results = undefined;
+        }
+
+        if(results === undefined){
+            didError(true);
+            return;
+        }
+
+        setAgenda(results);
+        isLoading(false);
+    }
 
     const createClient = async() =>
     {
@@ -98,8 +117,43 @@ export default function ClientAgenda() {
             </AppBar>
         </div>
 
+        {loadAgenda && (
+            <>
+                <Box
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        height: 500,
+                    }}
+                >
+
+                    {!loadError && (
+                        <CircularProgress 
+                            style={{
+                                color:'#3973E5'
+                            }}
+                        />
+                    )}
+                    
+                    <Typography 
+                        variant="h6"
+                        style={{
+                            color:'#3973E5'
+                        }}
+                    >
+                        {!loadError ? 'Loading clients information...':'Someting whent wrong, try again later...'}
+                    </Typography>
+                </Box>
+            </>
+        )}
+
         <Container
             className={classes.containerRoot}
+            style={{
+                visibility: loadAgenda === true ? 'hidden' : 'visible',
+            }}
         >
 
             <Box>
@@ -143,6 +197,7 @@ export default function ClientAgenda() {
                         backgroundColor:'#FF0000'
                     }}
                     columns={[
+                        {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: false},
                         {field: 'nameF', headerName: 'FIRST NAME', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'nameL', headerName: 'LAST NAME', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'bsn', headerName: 'B.S.N.', headerClassName: classes.gridHeader, flex: 1},
@@ -177,8 +232,7 @@ export default function ClientAgenda() {
                             }
                         ]} 
 
-                    rows={rows} 
-
+                    rows={agenda}
                     pageSize={7}
                     disableColumnMenu={true}
                 />
