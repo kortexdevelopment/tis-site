@@ -281,7 +281,7 @@ export default function AgencyUsers() {
                         backgroundColor:'#FF0000'
                     }}
                     columns={[
-                        {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: false},
+                        {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
                         {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'mail', headerName: 'ACCESS E-MAIL', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'pass', headerName: 'ACCESS PASS', headerClassName: classes.gridHeader, flex: 1},

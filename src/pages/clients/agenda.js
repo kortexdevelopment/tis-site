@@ -197,7 +197,7 @@ export default function ClientAgenda() {
                         backgroundColor:'#FF0000'
                     }}
                     columns={[
-                        {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: false},
+                        {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
                         {field: 'nameF', headerName: 'FIRST NAME', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'nameL', headerName: 'LAST NAME', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'bsn', headerName: 'B.S.N.', headerClassName: classes.gridHeader, flex: 1},
