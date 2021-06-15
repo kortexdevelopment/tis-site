@@ -20,7 +20,7 @@ import TextField from '@material-ui/core/TextField';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 
-import {Agenda} from '../../controllers/agency';
+import {Agenda, NewClient} from '../../controllers/agency';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +62,14 @@ export default function ClientAgenda() {
     const [loadError, didError] = React.useState(false);
 
     const [newClient, doNew] = React.useState(false);
+    const [creating, onCreate] = React.useState(false);
+    const [formError, setError] = React.useState('');
+
+    const [newNameF, setNameF] = React.useState('');
+    const [newNameL, setNameL] = React.useState('');
+    const [newNameB, setNameB] = React.useState('');
+    const [newPhone, setPhone] = React.useState('');
+    const [newMail, setMail] = React.useState('');
 
     React.useEffect(() => {
         if(!loadAgenda){
@@ -95,9 +103,48 @@ export default function ClientAgenda() {
         isLoading(false);
     }
 
-    const createClient = async() =>
-    {
-        doNew(false);
+    const createClient = async() =>{
+        onCreate(true);
+        setError('');
+
+        if(![newNameF, newNameL, newNameB, newPhone, newMail].every(Boolean)){
+            setError('*All inputs are required');
+            clearForm(false);
+            return;
+        }   
+
+        try{
+            var result = await NewClient(session.compId, newNameF, newNameL, newNameB, newPhone, newMail);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined || result.error){
+            setError("Ups... Something went wrong while creating the new client. Please try again.");
+            clearForm(false);
+            return;
+        }
+
+        //change to profile with the created client WIP
+        
+        clearForm(true);
+    }
+
+    const clearForm = async(success) =>{
+
+        if(success)
+        {
+            setNameF('');
+            setNameL('');
+            setNameB('');
+            setPhone('');
+            setMail('');
+            doNew(false);
+            setError('');
+        }
+
+        onCreate(false);
     }
 
   return (
@@ -242,7 +289,7 @@ export default function ClientAgenda() {
 
         <Modal
             open={newClient}
-            onClose={() => doNew(false)}
+            onClose={() => clearForm(true)}
             aria-labelledby="simple-modal-title"
             aria-describedby="simple-modal-description"
         >
@@ -268,6 +315,9 @@ export default function ClientAgenda() {
                         <Typography variant="h6" color="inherit">
                             NEW CLIENT
                         </Typography>
+
+                        
+
                     </Toolbar>
                 </AppBar>
             
@@ -276,6 +326,14 @@ export default function ClientAgenda() {
                         padding:8
                     }}
                 >
+                    <Typography 
+                            style={{
+                                color: '#FF0000',
+                            }}
+                        >
+                        {formError}
+                    </Typography>
+
                     <Typography 
                         style={{
                             color:"#3973E5",
@@ -300,6 +358,8 @@ export default function ClientAgenda() {
                         <TextField 
                             label="First Name"
                             variant="filled" 
+                            value={newNameF}
+                            onChange={(e) => setNameF(e.target.value)}
                         />
                         <FormHelperText style={{color:"#3973E5"}}>Leave empty for corporations</FormHelperText>
                     </FormControl>
@@ -308,6 +368,8 @@ export default function ClientAgenda() {
                         <TextField 
                             label="Last Name"
                             variant="filled" 
+                            value={newNameL}
+                            onChange={(e) => setNameL(e.target.value)}
                         />
                         <FormHelperText style={{color:"#3973E5"}}>Leave empty for corporations</FormHelperText>
                     </FormControl>
@@ -315,6 +377,8 @@ export default function ClientAgenda() {
                     <TextField 
                         label="B.S.N."
                         variant="filled" 
+                        value={newNameB}
+                        onChange={(e) => setNameB(e.target.value)}
                     />
 
                 </Box>
@@ -350,6 +414,8 @@ export default function ClientAgenda() {
                         style={{
                             width: '40%'
                         }}
+                        value={newPhone}
+                        onChange={(e) => setPhone(e.target.value)}
                     />
 
                     <TextField 
@@ -358,23 +424,26 @@ export default function ClientAgenda() {
                         style={{
                             width: '40%'
                         }}
+                        value={newMail}
+                        onChange={(e) => setMail(e.target.value)}
                     />
 
                 </Box>
 
                 <Button
+                    disabled={creating}
                     style={{
                         marginTop: 8,
                         marginBottom: 8,
                         marginLeft: 15,
                         marginRight: 15,
-                        backgroundColor: '#3973E5',
+                        backgroundColor: creating ? '#A5C0F3' : '#3973E5',
                         color: '#FFFFFF'
                     }}
 
                     onClick={createClient}
                 >
-                    Create Client
+                    {creating ? 'Creating ' : 'Create'} Client
                 </Button>
             </Box>
             

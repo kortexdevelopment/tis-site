@@ -119,3 +119,25 @@ export const Agenda = async(id) =>{
     
     return results;
 }
+
+export const NewClient = async(cid, nameF, nameL, nameB, phone, mail) =>{
+
+    var clientForm ={
+        cid: cid,
+        nameF: nameF,
+        nameL : nameL,
+        nameB : nameB,
+        phone : phone,
+        mail : mail
+    }
+
+    try{
+        var result = API.agencyNewClient(clientForm);
+    }
+    catch(e){
+        console.error(`Controller Error : AGENCY.NEW CLIENT \n${e}`);
+        result = undefined;
+    }
+
+    return result;
+}

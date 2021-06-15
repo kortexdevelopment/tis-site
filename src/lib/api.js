@@ -64,3 +64,13 @@ export const agencyNewAgent = async (cid, name, pass, mail, level) => {
 
   return data;
 }
+
+export const agencyNewClient = async (clientForm) => {
+  let endpoint = `agencyNewClient.php`;
+
+  const postData = clientForm
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
