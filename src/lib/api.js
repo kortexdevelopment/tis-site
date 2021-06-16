@@ -50,6 +50,16 @@ export const agencyClients = async(id) => {
   return data;
 }
 
+export const clientProfile = async(id) => {
+  let endpoint = `clientProfile.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {
   let endpoint = `agencyNewAgent.php`;
 

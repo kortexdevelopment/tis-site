@@ -17,6 +17,8 @@ import Switch from '@material-ui/core/Switch';
 import SaveIcon from '@material-ui/icons/Save';
 import IconButton from '@material-ui/core/IconButton';
 
+import {Profile} from '../../controllers/client';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -37,10 +39,25 @@ export default function ClientProfile() {
     const classes = useStyles();
     const [nav, setNav] = React.useState(0);
 
+    const [loadInfo, isLoad] = React.useState(true);
+    const [loadError, didError] = React.useState(false);
+
+    const [profile, setProfile] = React.useState(undefined);
+
     const handleTabs = (event, newValue) =>{
         setNav(newValue);
     }
 
+    React.useEffect(() => {
+        if(!loadInfo){
+            return;
+        }
+    },[]);
+
+    const handleLoad = async() =>{
+
+    }
+    
     return (
     <>
         <div className={classes.root}>

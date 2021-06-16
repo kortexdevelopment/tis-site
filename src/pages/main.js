@@ -367,7 +367,7 @@ export default function Main() {
 
                 {action === 'ClientProfile' &&
                 (
-                    <ClientProfile />
+                    <ClientProfile cid={clientId}/>
                 )}
 
                 {action === 'ClientApp' &&
