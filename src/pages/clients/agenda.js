@@ -53,7 +53,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function ClientAgenda() {
+export default function ClientAgenda(props) {
     const classes = useStyles();
     const session = JSON.parse(window.localStorage.getItem('session')); //compId userTp
 
@@ -76,6 +76,7 @@ export default function ClientAgenda() {
             return;
         }
         
+        props.onClient(undefined);
         handleLoading();
     });
 
@@ -126,8 +127,8 @@ export default function ClientAgenda() {
             return;
         }
 
-        //change to profile with the created client WIP
-        
+        props.onClient(result.cid);
+
         clearForm(true);
     }
 
@@ -145,6 +146,10 @@ export default function ClientAgenda() {
         }
 
         onCreate(false);
+    }
+
+    const idGetter = (params) =>{
+        return params.getValue(params.id, 'id');
     }
 
   return (
@@ -251,6 +256,7 @@ export default function ClientAgenda() {
                         {field: 'phone', headerName: 'PHONE', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'mail', headerName: 'E-MAIL', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'action ', headerName: '    ACTIONS', headerClassName: classes.gridHeader, flex: 0.8, sortable: false, 
+                            valueGetter: idGetter,
                             renderCell: (params) =>(
                                 <>
                                     <Box
@@ -268,6 +274,7 @@ export default function ClientAgenda() {
                                                 marginRight: 12,
                                                 fontSize: 15,
                                             }}
+                                            onClick={() => props.onClient(params.value)}
                                         >   
                                             <RecentActorsIcon fontSize='large'/>
                                         </IconButton>

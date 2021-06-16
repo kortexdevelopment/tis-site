@@ -60,11 +60,17 @@ export default function Main() {
     let history = useHistory();
 
     const [panel, SetPanel] = React.useState(0);
-    // const [client, HasClient] = React.useState(false);
+    const [client, HasClient] = React.useState(false);
+    const [clientId, setCid] = React.useState('');
+
     const [action, SetAction] = React.useState('');
 
     const handlePanels = (panel) => (event, isExpanded) => {
         SetPanel(isExpanded ? panel : false);
+    }
+
+    const handleDirectPanel = async(panel) =>{
+        SetPanel(panel);
     }
 
     const handleLogout = async() =>{
@@ -73,6 +79,19 @@ export default function Main() {
 
     const handleAction = async(_action) =>{
         SetAction(_action);
+    }
+
+    const handleClient = async(cid) =>{
+        if(cid === undefined){
+            HasClient(false);
+            setCid('');
+            return;
+        }
+
+        handleDirectPanel(3);
+        handleAction('ClientProfile');
+        HasClient(true);
+        setCid(cid);
     }
 
     return (
@@ -207,6 +226,7 @@ export default function Main() {
                         expanded={panel === 3}
                         onChange={handlePanels(3)}
                         style={{
+                            visibility: client ? 'visible' : 'hidden',
                         }}
                     >
                         <AccordionSummary
@@ -342,7 +362,7 @@ export default function Main() {
 
                 {action === 'ClientAgenda' &&
                 (
-                    <ClientAgenda />
+                    <ClientAgenda onClient={handleClient}/>
                 )}
 
                 {action === 'ClientProfile' &&
