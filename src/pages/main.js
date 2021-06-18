@@ -61,9 +61,19 @@ export default function Main() {
 
     const [panel, SetPanel] = React.useState(0);
     const [client, HasClient] = React.useState(false);
-    const [clientId, setCid] = React.useState('');
+    const [clientId, setCid] = React.useState(undefined);
 
     const [action, SetAction] = React.useState('');
+
+    React.useEffect(() => {
+        if(clientId === undefined){
+            return;
+        }
+
+        handleDirectPanel(3);
+        handleAction('ClientProfile');
+        HasClient(true);
+    }, [clientId]);
 
     const handlePanels = (panel) => (event, isExpanded) => {
         SetPanel(isExpanded ? panel : false);
@@ -84,13 +94,10 @@ export default function Main() {
     const handleClient = async(cid) =>{
         if(cid === undefined){
             HasClient(false);
-            setCid('');
+            setCid(undefined);
             return;
         }
 
-        handleDirectPanel(3);
-        handleAction('ClientProfile');
-        HasClient(true);
         setCid(cid);
     }
 
@@ -365,7 +372,7 @@ export default function Main() {
                     <ClientAgenda onClient={handleClient}/>
                 )}
 
-                {action === 'ClientProfile' &&
+                {(action === 'ClientProfile' && clientId != undefined) &&
                 (
                     <ClientProfile cid={clientId}/>
                 )}

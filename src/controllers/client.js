@@ -23,6 +23,7 @@ export const Profile = async(cid) => {
     }
 
     var clientProfile ={
+        id: main[0],
         //General Info
         nameF: main[2],
         nameL: main[3],
@@ -72,15 +73,15 @@ export const Profile = async(cid) => {
         numMiles: extra[9],
 
         readyAddress : function() {
-            return ![this.gAddress,this.gCity,this.gState,this.gZip,this.mAddress,this.mCity,this.mState,this.mZip].every((x) => x === null || x === undefined);
+            return [this.gAddress,this.gCity,this.gState,this.gZip,this.mAddress,this.mCity,this.mState,this.mZip,this.radius].every(Boolean);
             },
         
         readyFiling : function() {
-            return ![this.aFinance,this.aAccount,this.bFinance,this.bAccount,this.numCa,this.numMc,this.numUsDot].every((x) => x === null || x === undefined);
+            return [this.aFinance,this.aAccount,this.bFinance,this.bAccount,this.numCa,this.numMc,this.numUsDot].every(Boolean);
             },
 
         readyAditional : function() {
-            return ![this.yrsBussines, this.yrsStarted, this.prior, this.caDesc, this.caAverage, this.caMax, this.cbDesc, this.cbAverage, this.cbMax, this.dateFrom, this.dateTo, this.numPolicy, this.typePolicy, this.losNum, this.losMoney, this.losDriver, this.numViolations, this.numAccidents, this.numMiles].every((x) => x === null || x === undefined);
+            return [this.yrsBussines, this.yrsStarted, this.prior, this.caDesc, this.caAverage, this.caMax, this.cbDesc, this.cbAverage, this.cbMax, this.dateFrom, this.dateTo, this.numPolicy, this.typePolicy, this.losNum, this.losMoney, this.losDriver, this.numViolations, this.numAccidents, this.numMiles].every(Boolean);
             },
     }
 

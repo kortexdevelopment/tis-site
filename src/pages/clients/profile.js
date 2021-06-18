@@ -40,6 +40,9 @@ export default function ClientProfile(props) {
     const classes = useStyles();
     const [nav, setNav] = React.useState(0);
     const [edit, onEdit] = React.useState(false);
+    const [addReady, readyAdd] = React.useState(false);
+    const [filReady, readyFil] = React.useState(false);
+    const [extReady, readyExt] = React.useState(false);
 
     const [loadInfo, isLoad] = React.useState(true);
     const [loadError, didError] = React.useState(false);
@@ -57,6 +60,17 @@ export default function ClientProfile(props) {
 
         handleLoad();
     },[]);
+
+    React.useEffect(() => {
+        if(profile === undefined){
+            return;
+        }
+
+        readyAdd(profile.readyAddress());
+        readyFil(profile.readyFiling());
+        readyExt(profile.readyAditional());
+
+    },[profile]);
 
     const handleLoad = async() =>{
         try{
@@ -87,6 +101,9 @@ export default function ClientProfile(props) {
 
     const debugConsole = async() =>{
         console.log(profile);
+        console.log(profile.readyAddress());
+        console.log(profile.readyFiling());
+        console.log(profile.readyAditional());
     }
 
     return (
@@ -161,10 +178,30 @@ export default function ClientProfile(props) {
                         backgroundColor: '#3973E5'
                     }}
                 >
-                    <Tab label="General Info"/>
-                    <Tab label="Adresses Info"/>
-                    <Tab label="Filing Info" />
-                    <Tab label="Additional Info" />
+                    <Tab 
+                        label="General Info"    
+                    />
+
+                    <Tab 
+                        label="Adresses Info"
+                        style={{
+                            backgroundColor: !addReady ? '#FF5959' : '',
+                        }}
+                    />
+
+                    <Tab 
+                        label="Filing Info" 
+                        style={{
+                            backgroundColor: !filReady ? '#FF5959' : '',
+                        }}
+                    />
+
+                    <Tab 
+                        label="Additional Info" 
+                        style={{
+                            backgroundColor: !extReady ? '#FF5959' : '',
+                        }}
+                    />
                     
                 </Tabs>
                 <Box
