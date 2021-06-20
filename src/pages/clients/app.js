@@ -63,7 +63,7 @@ export default function ClientApp() {
   const classes = useStyles();
 
   const [newUser, doNew] = React.useState(false);
-
+    //Add app user buslhit logic
     React.useEffect(() => {
         if(newUser === false)
         {

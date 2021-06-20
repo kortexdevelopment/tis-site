@@ -18,7 +18,7 @@ import SaveIcon from '@material-ui/icons/Save';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
-import {Profile} from '../../controllers/client';
+import {Profile, UpdateProfile} from '../../controllers/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -40,6 +40,7 @@ export default function ClientProfile(props) {
     const classes = useStyles();
     const [nav, setNav] = React.useState(0);
     const [edit, onEdit] = React.useState(false);
+    const [missing, isMissing] = React.useState(false);
     const [addReady, readyAdd] = React.useState(false);
     const [filReady, readyFil] = React.useState(false);
     const [extReady, readyExt] = React.useState(false);
@@ -70,6 +71,7 @@ export default function ClientProfile(props) {
         readyFil(profile.readyFiling());
         readyExt(profile.readyAditional());
 
+        isMissing(![addReady, filReady, extReady].every(Boolean));
     },[profile]);
 
     const handleLoad = async() =>{
@@ -97,6 +99,23 @@ export default function ClientProfile(props) {
         var copy = {...profile};
         copy[prop] = value;
         setProfile(copy);
+    }
+
+    const handleUpdate = async() =>{
+        try{
+            var result = await UpdateProfile(profile);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... \nSomething went wrong while updating the information. Please try again');
+            return;
+        }
+
+        alert('Client Profile updated successfully')
+        onEdit(false);
     }
 
     const debugConsole = async() =>{
@@ -163,7 +182,25 @@ export default function ClientProfile(props) {
                 visibility: loadInfo ? 'hidden' : 'visible',
             }}
         >
-            
+
+            <Box
+                style={{
+                    display: missing ? 'flex' : 'none',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                }}
+            >
+                <Typography 
+                    variant="h6"
+                    style={{
+                        color: '#FF0000'
+                    }}
+                >
+                    *There are missing information for this profile that need to be attend
+                </Typography>
+            </Box>
+
             <AppBar 
                 position="static"
                 style={{
@@ -220,13 +257,14 @@ export default function ClientProfile(props) {
                     <Switch
                         color='secondary'
                         value={edit}
+                        checked={edit}
                         onChange={(e) => onEdit(e.target.checked)}
                     />
                     <IconButton
                         style={{
                             color: '#FFFFFF'
                         }}
-                        onClick={() => debugConsole()}
+                        onClick={() => handleUpdate()}
                     >
                         <SaveIcon 
                         />
@@ -1060,7 +1098,6 @@ export default function ClientProfile(props) {
                                 style={{
                                     flex:1,
                                 }}
-                                size='small'
                                 value={profile ? profile.typePolicy : ""}
                                 onChange={(e) => changeProp("typePolicy", e.target.value)}
                             />

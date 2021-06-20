@@ -87,3 +87,50 @@ export const Profile = async(cid) => {
 
     return clientProfile;
 }
+
+export const UpdateProfile = async(profile) =>{
+    try{
+        var result = await API.clientUpdateProfile(profile);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.UPDATE PROFILE \n${e}`);
+        result = undefined;
+    }        
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const AppUsers = async(cid) =>{
+    try{
+        var result = await API.clientAppUsers(cid);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT. APP USERS \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    var users = result.users;
+    var appUsers = [];
+
+    for(var a = 0; a < users.length; a++)    
+    {
+        var appUser = {
+            id: users[a][0],
+            user: users[a][2],
+            pass: users[a][3],
+        }
+
+        appUser.push(appUser);
+    }
+    
+
+    return appUsers;
+}

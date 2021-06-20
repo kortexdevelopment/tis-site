@@ -372,7 +372,7 @@ export default function Main() {
                     <ClientAgenda onClient={handleClient}/>
                 )}
 
-                {(action === 'ClientProfile' && clientId != undefined) &&
+                {(action === 'ClientProfile' && clientId !== undefined) &&
                 (
                     <ClientProfile cid={clientId}/>
                 )}
