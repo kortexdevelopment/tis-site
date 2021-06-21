@@ -379,32 +379,32 @@ export default function Main() {
 
                 {action === 'ClientApp' &&
                 (
-                    <ClientApp />
+                    <ClientApp cid={clientId}/>
                 )}
 
                 {action === 'ClientCoverage' &&
                 (
-                    <ClientCoverage />
+                    <ClientCoverage cid={clientId}/>
                 )}
 
                 {action === 'ClientVehicles' &&
                 (
-                    <ClientVehicles />
+                    <ClientVehicles cid={clientId}/>
                 )}
                 
                 {action === 'ClientDrivers' &&
                 (
-                    <ClientDrivers />
+                    <ClientDrivers cid={clientId}/>
                 )}
                 
                 {action === 'ClientPolicies' &&
                 (
-                    <ClientPolicies />
+                    <ClientPolicies cid={clientId}/>
                 )}
 
                 {action === 'ClientDocs' &&
                 (
-                    <ClientDocs />
+                    <ClientDocs cid={clientId}/>
                 )}
 
             </Box>

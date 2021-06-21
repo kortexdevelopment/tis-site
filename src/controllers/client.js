@@ -128,9 +128,115 @@ export const AppUsers = async(cid) =>{
             pass: users[a][3],
         }
 
-        appUser.push(appUser);
+        appUsers.push(appUser);
     }
     
-
     return appUsers;
+}
+
+export const NewAppUser = async(cid, name, pass) => {
+
+    var userData = {
+        id: cid,
+        name: name,
+        pass: pass,
+        domain: cid + '.tis',
+    }
+
+    try{
+        var result = await API.clientNewAppUser(userData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT. NEW APP USERS \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined)
+    {
+        return undefined
+    }
+
+    return true;
+}
+
+export const RemoveAppUser = async(uid) => {
+    try{
+        var result = API.clientRemoveAppUser(uid);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT. REMOVE APP USERS \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const Drivers = async(cid) =>{
+    try{
+        var result = await API.clientDrivers(cid);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.DRIVERS \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    var raw = result.drivers;
+    var drivers = [];
+
+    for(var a = 0; a < raw.length; a++)    
+    {
+        var driver = {
+            id: raw[a][0],
+            name: raw[a][2],
+            licence: raw[a][3],
+            state: raw[a][4],
+            dob: raw[a][5],
+            doh: raw[a][6],
+            exp: raw[a][7],
+        }
+
+        drivers.push(driver);
+    }
+    
+    return drivers;
+}
+
+export const NewDriver = async(driverData) =>{
+    try{
+        var result = await API.clientNewDriver(driverData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.NEW DRIVER \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const RemoveDriver = async(driverData) =>{
+    try{
+        var result = await API.clientRemoveDriver(driverData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.REMOVE DRIVER \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
 }

@@ -70,6 +70,16 @@ export const clientAppUsers = async(id) => {
   return data;
 }
 
+export const clientDrivers = async(id) => {
+  let endpoint = `clientDrivers.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {
   let endpoint = `agencyNewAgent.php`;
 
@@ -99,6 +109,47 @@ export const clientUpdateProfile = async (profile) => {
   let endpoint = `clientUpdateProfile.php`;
 
   const postData = profile
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientNewAppUser = async (userData) => {
+  let endpoint = `clientNewAppUser.php`;
+
+  const postData = userData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientRemoveAppUser = async (uid) => {
+  let endpoint = `clientRemoveAppUser.php`;
+
+  const postData = {}
+  postData['id'] = uid;
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientNewDriver = async (driverData) => {
+  let endpoint = `clientNewDriver.php`;
+
+  const postData = driverData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientRemoveDriver = async (driverData) => {
+  let endpoint = `clientRemoveDriver.php`;
+
+  const postData = driverData
   
   let data = HTTP.POST(endpoint, postData);
 

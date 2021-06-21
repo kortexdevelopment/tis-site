@@ -335,8 +335,6 @@ export default function AgencyUsers() {
                                             <EditRoundedIcon />
                                         </IconButton> */}
 
-                                        
-
                                     </Box>
                                 </>
                             ),
