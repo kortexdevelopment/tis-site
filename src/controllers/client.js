@@ -376,3 +376,78 @@ export const RemovePolicy = async(policyData) =>{
 
     return true;
 }
+
+export const Coverages = async(cid) =>{
+    try{
+        var result = await API.clientCoverages(cid);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.COVERAGES \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    var raw = result.coverages;
+    var coverages = undefined;    
+    if(raw.length === Number(0)){
+        coverages = {
+            id: undefined,
+            update: false,
+            vLiability: -1,
+            dLiability: -1,
+            vCargo: 0,
+            dCargo: -1,
+            vGeneral: 0,
+            dGeneral: -1,
+        }
+    }
+    else{
+        coverages = {
+            id: raw[0][0],
+            update: true,
+            vLiability: raw[0][2],
+            dLiability: raw[0][3],
+            vCargo: raw[0][4],
+            dCargo: raw[0][5],
+            vGeneral: raw[0][6],
+            dGeneral: raw[0][7],
+        }
+    }
+
+    return coverages;
+}
+
+export const NewCoverages = async(coverData) =>{
+    try{
+        var result = await API.clientNewCoverages(coverData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.NEW COVERAGES \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const UpdateCoverages = async(coverData) =>{
+    try{
+        var result = await API.clientUpdateCoverages(coverData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.UPDATE COVERAGES \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}

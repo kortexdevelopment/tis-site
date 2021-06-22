@@ -14,9 +14,12 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Input from '@material-ui/core/Input';
 import InputAdornment from '@material-ui/core/InputAdornment';
+
+import { Coverages, NewCoverages, UpdateCoverages } from '../../controllers/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,9 +44,113 @@ const useStyles = makeStyles((theme) => ({
 // A5C0F3 secondary
 // FF0000 red
 
-export default function ClientCoverage() {
+export default function ClientCoverage(props) {
     const classes = useStyles();
     const [ded, setDed] = React.useState(-1);
+
+    const [loadInfo, isLoading] = React.useState(true);
+    const [loadError, didError] = React.useState(false);
+    const [coverages, setCoverages] = React.useState(undefined);
+
+    const [edit, canEdit] = React.useState(false);
+
+    React.useEffect(() =>{
+        if(!loadInfo){
+            return;
+        }
+
+        handleLoading();
+    });
+
+    const handleLoading = async() => {
+        try{
+            var result = await Coverages(props.cid)
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            didError(true);
+            return;
+        }
+
+        setCoverages(result);
+        isLoading(false);
+    }
+
+    const handleCoverage = async() => {
+        if(coverages.vLiability === -1){
+            alert('Must select an option for Libility Value');
+            return;
+        }
+
+        if(coverages.dLiability === -1){
+            alert('Must select an option for Libility Deductible');
+            return;
+        }
+
+        if(coverages.dCargo === -1){
+            alert('Must select an option for Cargo Deductible');
+            return;
+        }
+
+        if(coverages.dGeneral === -1){
+            alert('Must select an option for Gral. Liability Deductible');
+            return;
+        }
+
+        if(coverages.update === true){
+            updateCoverages();
+        }
+        else{
+            createCoverages();
+        }
+    }
+
+    const createCoverages = async() => {
+        var copy = {...coverages, cid: props.cid};
+
+        try{
+            var result = await NewCoverages(copy);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... Something went wrong while updating the coverages. Please, try again');
+            return;
+        }
+
+        alert('Coverages updated successfully!');
+        canEdit(false);
+    }
+
+    const updateCoverages = async() => {
+        try{
+            var result = await UpdateCoverages(coverages);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... Something went wrong while updating the coverages. Please, try again');
+            return;
+        }
+
+        alert('Coverages updated successfully!');
+        canEdit(false);
+    }
+
+    const handleChanges = async(e) =>{
+        setCoverages({...coverages, [e.target.name]: e.target.value})
+    }
+
+    const consoleDebug = async() => {
+        console.log(coverages);
+    }
 
     return (
     <>
@@ -62,8 +169,43 @@ export default function ClientCoverage() {
             </AppBar>
         </div>
 
+        {loadInfo && (
+            <>
+                <Box
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        height: 500,
+                    }}
+                >
+
+                    {!loadError && (
+                        <CircularProgress 
+                            style={{
+                                color:'#3973E5'
+                            }}
+                        />
+                    )}
+                    
+                    <Typography 
+                        variant="h6"
+                        style={{
+                            color:'#3973E5'
+                        }}
+                    >
+                        {!loadError ? 'Loading Coverages information...':'Someting whent wrong, try again later...'}
+                    </Typography>
+                </Box>
+            </>
+        )}
+
         <Container
             className={classes.containerRoot}
+            style={{
+                visibility: loadInfo === true ? 'hidden' : 'visible',
+            }}
         >
             
             <AppBar 
@@ -96,11 +238,15 @@ export default function ClientCoverage() {
                     </Typography>
                     <Switch
                         color='secondary'
+                        value={edit}
+                        checked={edit}
+                        onChange={(e) => canEdit(e.target.checked)}
                     />
                     <IconButton
                         style={{
                             color: '#FFFFFF'
                         }}
+                        onClick={handleCoverage}
                     >
                         <SaveIcon 
                         />
@@ -143,28 +289,34 @@ export default function ClientCoverage() {
                     <FormControl className={classes.textSingned}>
                         <InputLabel id="title">Value </InputLabel>
                         <Select
+                            disabled={!edit}
                             labelId="title"
-                            value={ded}
+                            name="vLiability"
+                            value={coverages === undefined ? -1 : coverages.vLiability}
+                            onChange={handleChanges}
                             displayEmpty
                         >
                             <MenuItem value={-1}>Select an option</MenuItem>
-                            <MenuItem value={1}>$750,000</MenuItem>
-                            <MenuItem value={2}>$1,000,000</MenuItem>
+                            <MenuItem value={750000}>$750,000</MenuItem>
+                            <MenuItem value={1000000}>$1,000,000</MenuItem>
                         </Select>
                     </FormControl>
 
                     <FormControl className={classes.selectControl}>
                         <InputLabel id="title">Deductible </InputLabel>
                         <Select
+                            disabled={!edit}
                             labelId="title"
-                            value={ded}
+                            name='dLiability'
+                            value={coverages === undefined ? -1 : coverages.dLiability}
+                            onChange={handleChanges}
                             displayEmpty
                         >
                             <MenuItem value={-1}>Select an option</MenuItem>
                             <MenuItem value={0}>N/A</MenuItem>
-                            <MenuItem value={1}>$1,000</MenuItem>
-                            <MenuItem value={2}>$2,500</MenuItem>
-                            <MenuItem value={3}>$5,000</MenuItem>
+                            <MenuItem value={1000}>$1,000</MenuItem>
+                            <MenuItem value={2500}>$2,500</MenuItem>
+                            <MenuItem value={5000}>$5,000</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -207,24 +359,31 @@ export default function ClientCoverage() {
                     <FormControl fullWidth className={classes.textSingned}>
                         <InputLabel htmlFor="value">Value</InputLabel>
                         <Input
+                            disabled={!edit}
                             id="value"
                             type='number'
                             startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                            name='vCargo'
+                            value={coverages === undefined ? -1 : coverages.vCargo}
+                            onChange={handleChanges}
                         />
                     </FormControl>
 
                     <FormControl className={classes.selectControl}>
                         <InputLabel id="title">Deductible </InputLabel>
                         <Select
+                            disabled={!edit}
                             labelId="title"
-                            value={ded}
                             displayEmpty
+                            name='dCargo'
+                            value={coverages === undefined ? -1 : coverages.dCargo}
+                            onChange={handleChanges}
                         >
                             <MenuItem value={-1}>Select an option</MenuItem>
                             <MenuItem value={0}>N/A</MenuItem>
-                            <MenuItem value={1}>$1,000</MenuItem>
-                            <MenuItem value={2}>$2,500</MenuItem>
-                            <MenuItem value={3}>$5,000</MenuItem>
+                            <MenuItem value={1000}>$1,000</MenuItem>
+                            <MenuItem value={2500}>$2,500</MenuItem>
+                            <MenuItem value={5000}>$5,000</MenuItem>
                         </Select>
                     </FormControl>
 
@@ -267,24 +426,31 @@ export default function ClientCoverage() {
                     <FormControl fullWidth className={classes.textSingned}>
                         <InputLabel htmlFor="value">Value</InputLabel>
                         <Input
+                            disabled={!edit}
                             id="value"
                             type='number'
                             startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                            name='vGeneral'
+                            value={coverages === undefined ? -1 : coverages.vGeneral}
+                            onChange={handleChanges}
                         />
                     </FormControl>
 
                     <FormControl className={classes.selectControl}>
                         <InputLabel id="title">Deductible </InputLabel>
                         <Select
+                            disabled={!edit}
                             labelId="title"
-                            value={ded}
                             displayEmpty
+                            name='dGeneral'
+                            value={coverages === undefined ? -1 : coverages.dGeneral}
+                            onChange={handleChanges}
                         >
                             <MenuItem value={-1}>Select an option</MenuItem>
                             <MenuItem value={0}>N/A</MenuItem>
-                            <MenuItem value={1}>$1,000</MenuItem>
-                            <MenuItem value={2}>$2,500</MenuItem>
-                            <MenuItem value={3}>$5,000</MenuItem>
+                            <MenuItem value={1000}>$1,000</MenuItem>
+                            <MenuItem value={2500}>$2,500</MenuItem>
+                            <MenuItem value={5000}>$5,000</MenuItem>
                         </Select>
                     </FormControl>
 

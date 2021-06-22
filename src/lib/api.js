@@ -100,6 +100,18 @@ export const clientPolices = async(id) => {
   return data;
 }
 
+export const clientCoverages = async(id) => {
+  let endpoint = `clientCoverages.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
+///////////////////////////////////POST///////////////////////////////////
+
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {
   let endpoint = `agencyNewAgent.php`;
 
@@ -210,6 +222,26 @@ export const clientRemovePolicy = async (policyData) => {
   let endpoint = `clientRemovePolicy.php`;
 
   const postData = policyData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientNewCoverages = async (coverData) => {
+  let endpoint = `clientNewCoverages.php`;
+
+  const postData = coverData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientUpdateCoverages = async (coverData) => {
+  let endpoint = `clientUpdateCoverages.php`;
+
+  const postData = coverData
   
   let data = HTTP.POST(endpoint, postData);
 
