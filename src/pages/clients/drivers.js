@@ -121,9 +121,6 @@ export default function ClientDrivers(props) {
 
     const createDriver = async() =>
     {
-        console.log(test);
-        return;
-
         if(![newName, newLicence, newExp, newDob, newDoh].every(Boolean)){
             alert('All parameters are required');
             return;
@@ -441,7 +438,7 @@ export default function ClientDrivers(props) {
                     </Select>
                 </FormControl>
 
-                <MuiPickersUtilsProvider utils={DateFnsUtils}>
+                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> //Se ocupa integrar bien para lectura y escritura
                     <KeyboardDatePicker
                         disableToolbar
                         variant="filled"
@@ -460,7 +457,7 @@ export default function ClientDrivers(props) {
                             'aria-label': 'change date',
                         }}
                     />
-                </MuiPickersUtilsProvider>
+                </MuiPickersUtilsProvider> */}
 
                 <TextField
                     style={{

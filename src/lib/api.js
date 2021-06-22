@@ -80,6 +80,26 @@ export const clientDrivers = async(id) => {
   return data;
 }
 
+export const clientVehicles = async(id) => {
+  let endpoint = `clientVehicles.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
+export const clientPolices = async(id) => {
+  let endpoint = `clientPolices.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {
   let endpoint = `agencyNewAgent.php`;
 
@@ -150,6 +170,46 @@ export const clientRemoveDriver = async (driverData) => {
   let endpoint = `clientRemoveDriver.php`;
 
   const postData = driverData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientNewVehicle = async (vehicleData) => {
+  let endpoint = `clientNewVehicle.php`;
+
+  const postData = vehicleData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientRemoveVehicle = async (vehicleData) => {
+  let endpoint = `clientRemoveVehicle.php`;
+
+  const postData = vehicleData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientNewPolicy = async (policyData) => {
+  let endpoint = `clientNewPolicy.php`;
+
+  const postData = policyData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientRemovePolicy = async (policyData) => {
+  let endpoint = `clientRemovePolicy.php`;
+
+  const postData = policyData
   
   let data = HTTP.POST(endpoint, postData);
 

@@ -14,11 +14,14 @@ import IconButton from '@material-ui/core/IconButton';
 import Modal from '@material-ui/core/Modal';
 import { Button } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+
+import { Vehicles, NewVehicle, RemoveVehicle } from '../../controllers/client';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,32 +54,150 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const rows = [
-  { id: 1, make: 'Ford', year: '2005', gvw: '15T', model: 'Tractor', value: '$1000', ded: '$5000'},
-  { id: 3, make: 'Ford', year: '2005', gvw: '15T', model: 'Tractor', value: '$1000', ded: '$5000'},
-  { id: 4, make: 'Ford', year: '2005', gvw: '15T', model: 'Tractor', value: '$1000', ded: '$5000'},
-];
-
-
 // 3973E5 primary
 // A5C0F3 secondary
 // FF0000 red
 
-export default function ClientVehicles() {
-  const classes = useStyles();
+export default function ClientVehicles(props) {
+    const classes = useStyles();
 
-  const [newUser, doNew] = React.useState(false);
-  const [newModel, setModel] = React.useState(0);
+    const [loadInfo, isLoading] = React.useState(true);
+    const [loadError, didError] = React.useState(false);
+    const [vehicles, setVehicles] = React.useState([]);
+
+    const [newUser, doNew] = React.useState(false);
+    const [newMake, setMake] = React.useState('');
+    const [newYear, setYear] = React.useState('');
+    const [newGvw, setGvw] = React.useState('');
+    const [newVin, setVin] = React.useState('');
+    const [newModel, setModel] = React.useState(0);
+    const [newValue, setValue] = React.useState('');
+    const [newDeductible, setDeductible] = React.useState(0);
+
+    React.useEffect(() => {
+        if(!loadInfo){
+            return;
+        }
+
+        handleLoading();
+    });
 
     React.useEffect(() => {
         if(newUser === false)
         {
-            //Clean this shit
+            clearInput();
         }
     }, [newUser]);
 
+    const idGetter = (params) =>{
+        return params.getValue(params.id, 'id');
+    }
+
+    const handleLoading = async() =>{
+        try{
+            var result = await Vehicles(props.cid);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            didError(true);
+            return;
+        }
+
+        setVehicles(result);
+        isLoading(false);
+    }
+
     const createVehicle = async() =>
     {
+        if(![newMake, newYear, newGvw, newVin, newValue].every(Boolean)){
+            alert('All parameters are required.');
+            return;
+        }
+
+        if(newModel === Number(0)){
+            alert('Must select an option for MODEL');
+            return;
+        }
+
+        var vehicle = {
+            cid: props.cid,
+            make: newMake,
+            year: newYear,
+            gvw: newGvw,
+            vin: newVin,
+            model: newModel,
+            value: Number(newValue),
+            deductible: Number(newDeductible),
+        }
+
+        console.log(vehicle);
+
+        try{
+            var result = await NewVehicle(vehicle);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... Something went wrong while creating the vehicle. Please, try again');
+            return;
+        }
+
+        alert('Vehicle created successfully!');
+        handleRefresh();
+        clearInput();
+    }
+
+    const removeVehicle = async(vid) =>{
+        var vehicle = {
+            id:vid
+        }
+
+        try{
+            var result = await RemoveVehicle(vehicle);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... Something went wrong while removing the vehicle. Please, try again');
+            return;
+        }
+
+        alert('Vehicle removed succcessfully');
+        handleRefresh();
+    }
+
+    const handleRefresh = async() => {
+        try{
+            var result = await Vehicles(props.cid);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            didError(true);
+            return;
+        }
+
+        setVehicles(result);
+    }
+
+    const clearInput = async() => {
+        doNew('');
+        setMake('');
+        setYear('');
+        setGvw('');
+        setVin('');
+        setModel(0);
+        setValue('');
+        setDeductible(0);
         doNew(false);
     }
 
@@ -97,8 +218,43 @@ export default function ClientVehicles() {
             </AppBar>
         </div>
 
+        {loadInfo && (
+            <>
+                <Box
+                    style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'column',
+                        height: 500,
+                    }}
+                >
+
+                    {!loadError && (
+                        <CircularProgress 
+                            style={{
+                                color:'#3973E5'
+                            }}
+                        />
+                    )}
+                    
+                    <Typography 
+                        variant="h6"
+                        style={{
+                            color:'#3973E5'
+                        }}
+                    >
+                        {!loadError ? 'Loading Vehicles information...':'Someting whent wrong, try again later...'}
+                    </Typography>
+                </Box>
+            </>
+        )}
+
         <Container
             className={classes.containerRoot}
+            style={{
+                visibility: loadInfo === true ? 'hidden' : 'visible',
+            }}
         >
 
             <Box>
@@ -145,10 +301,12 @@ export default function ClientVehicles() {
                         {field: 'make', headerName: 'MAKE', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'year', headerName: 'YEAR', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'gvw', headerName: 'G.V.W.', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'model', headerName: 'VIN', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'vin', headerName: 'VIN', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'model', headerName: 'MODEL', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'value', headerName: 'VALUE', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'ded', headerName: 'DEDUCTIBLE', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'deductible', headerName: 'DEDUCTIBLE', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false, 
+                            valueGetter: idGetter,
                             renderCell: (params) =>(
                                 <>
                                     <Box
@@ -166,11 +324,12 @@ export default function ClientVehicles() {
                                                 backgroundColor: '#3973E5',
                                                 marginRight: 12
                                             }}
+                                            onClick={() => removeVehicle(params.value)}
                                         >
                                             <DeleteForeverRoundedIcon />
                                         </IconButton>
 
-                                        <IconButton
+                                        {/* <IconButton
                                             aria-label="EDIT" 
                                             component="span"
                                             style={{
@@ -180,14 +339,14 @@ export default function ClientVehicles() {
                                             }}
                                         >
                                             <EditRoundedIcon />
-                                        </IconButton>
+                                        </IconButton> */}
                                     </Box>
                                 </>
                             ),
                             }
                         ]} 
 
-                    rows={rows} 
+                    rows={vehicles} 
 
                     pageSize={7}
                     disableColumnMenu={true}
@@ -235,6 +394,8 @@ export default function ClientVehicles() {
                     }}
                     label="Make"
                     variant="filled" 
+                    value={newMake}
+                    onChange={(e) => setMake(e.target.value)}
                 />
 
                 <TextField 
@@ -246,6 +407,8 @@ export default function ClientVehicles() {
                     label="Year"
                     type='number'
                     variant="filled" 
+                    value={newYear}
+                    onChange={(e) => setYear(e.target.value)}
                 />
 
                 <TextField 
@@ -256,6 +419,8 @@ export default function ClientVehicles() {
                     }}
                     label="G.V.W."
                     variant="filled" 
+                    value={newGvw}
+                    onChange={(e) => setGvw(e.target.value)}
                 />
 
                 <TextField 
@@ -264,8 +429,13 @@ export default function ClientVehicles() {
                         marginLeft: 15,
                         marginRight: 15,
                     }}
+                    inputProps={{
+                        maxLength: 17,
+                    }}
                     label="VIN"
                     variant="filled" 
+                    value={newVin}
+                    onChange={(e) => setVin(e.target.value)}
                 />
 
                 <FormControl 
@@ -283,10 +453,10 @@ export default function ClientVehicles() {
                         onChange={(e) => setModel(e.target.value)}
                     >
                         <MenuItem value={0}>Select one option</MenuItem>
-                        <MenuItem value={'Admin'}>Tractor</MenuItem>
-                        <MenuItem value={'Normal'}>Trailer</MenuItem>
-                        <MenuItem value={'Normal'}>Non-Owned</MenuItem>
-                        <MenuItem value={'Normal'}>Interchange</MenuItem>
+                        <MenuItem value={'Tractor'}>Tractor</MenuItem>
+                        <MenuItem value={'Trailer'}>Trailer</MenuItem>
+                        <MenuItem value={'Non Owned'}>Non-Owned</MenuItem>
+                        <MenuItem value={'Interchange'}>Interchange</MenuItem>
                     </Select>
                 </FormControl>
                 
@@ -299,6 +469,8 @@ export default function ClientVehicles() {
                     label="Value"
                     type='number'
                     variant="filled" 
+                    value={newValue}
+                    onChange={(e) => setValue(e.target.value)}
                 />
 
                 <FormControl 
@@ -312,14 +484,13 @@ export default function ClientVehicles() {
                     <InputLabel id="ded">Deductible</InputLabel>
                     <Select
                         labelId="ded"
-                        value={newModel}
-                        onChange={(e) => setModel(e.target.value)}
+                        value={newDeductible}
+                        onChange={(e) => setDeductible(e.target.value)}
                     >
-                        <MenuItem value={0}>Select one option</MenuItem>
-                        <MenuItem value={'Admin'}>N/A</MenuItem>
-                        <MenuItem value={'Normal'}>$1,000</MenuItem>
-                        <MenuItem value={'Normal'}>$2,500</MenuItem>
-                        <MenuItem value={'Normal'}>$5,000</MenuItem>
+                        <MenuItem value={0}>N/A</MenuItem>
+                        <MenuItem value={1000}>$1,000</MenuItem>
+                        <MenuItem value={2500}>$2,500</MenuItem>
+                        <MenuItem value={5000}>$5,000</MenuItem>
                     </Select>
                 </FormControl>
 

@@ -198,7 +198,7 @@ export const Drivers = async(cid) =>{
             name: raw[a][2],
             licence: raw[a][3],
             state: raw[a][4],
-            dob: raw[a][5],
+            dob: raw[a][5], //?Ajustar formato de fecha desde creacion / Hacer un formato de visualizacion independiente
             doh: raw[a][6],
             exp: raw[a][7],
         }
@@ -231,6 +231,142 @@ export const RemoveDriver = async(driverData) =>{
     }
     catch(e){
         console.error(`Controller Error : CLIENT.REMOVE DRIVER \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const Vehicles = async(cid) =>{
+    try{
+        var result = await API.clientVehicles(cid);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.VEHICLES \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    var raw = result.vehicles;
+    var vehicles = [];
+
+    for(var a = 0; a < raw.length; a++)    
+    {
+        var vehicle = {
+            id: raw[a][0],
+            make: raw[a][2],
+            year: raw[a][3],
+            gvw: raw[a][4],
+            vin: raw[a][5],
+            model: raw[a][6],
+            value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits:2 }).format(Number(raw[a][7])),
+            deductible: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits:2 }).format(Number(raw[a][8])),
+        }
+
+        vehicles.push(vehicle);
+    }
+    
+    return vehicles;
+
+}
+
+export const NewVehicle = async(vehicleData) =>{
+    try{
+        var result = await API.clientNewVehicle(vehicleData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.NEW VEHICLES \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const RemoveVehicle = async(vehicleData) =>{
+    try{
+        var result = await API.clientRemoveVehicle(vehicleData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.NEW VEHICLES \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const Policies = async(cid) =>{
+    try{
+        var result = await API.clientPolices(cid);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.POLICIES \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    var raw = result.policies;
+    var policies = [];
+
+    for(var a = 0; a < raw.length; a++)    
+    {
+        var cover = raw[a][6].split(',');
+
+        var policy = {
+            id: raw[a][0],
+            company: raw[a][2],
+            number: raw[a][3],
+            from: raw[a][4],
+            to: raw[a][5],
+            covers: cover,
+            niac: raw[a][8],
+        }
+
+        policies.push(policy);
+    }
+    
+    return policies;
+}
+
+export const NewPolicy = async(policyData) =>{
+    try{
+        var result = await API.clientNewPolicy(policyData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.NEW POLICY \N${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}
+
+export const RemovePolicy = async(policyData) =>{
+    try{
+        var result = await API.clientRemovePolicy(policyData);
+    }
+    catch(e){
+        console.error(`Controller Error : CLIENT.REMOVE POLICY \N${e}`);
         result = undefined;
     }
 
