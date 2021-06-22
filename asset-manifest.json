@@ -1,21 +1,21 @@
 {
   "files": {
     "main.css": "/tis-site/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/tis-site/static/js/main.66e45e46.chunk.js",
-    "main.js.map": "/tis-site/static/js/main.66e45e46.chunk.js.map",
+    "main.js": "/tis-site/static/js/main.2ee932a8.chunk.js",
+    "main.js.map": "/tis-site/static/js/main.2ee932a8.chunk.js.map",
     "runtime-main.js": "/tis-site/static/js/runtime-main.df3cd2d6.js",
     "runtime-main.js.map": "/tis-site/static/js/runtime-main.df3cd2d6.js.map",
-    "static/js/2.29cae5b9.chunk.js": "/tis-site/static/js/2.29cae5b9.chunk.js",
-    "static/js/2.29cae5b9.chunk.js.map": "/tis-site/static/js/2.29cae5b9.chunk.js.map",
+    "static/js/2.7a7b663c.chunk.js": "/tis-site/static/js/2.7a7b663c.chunk.js",
+    "static/js/2.7a7b663c.chunk.js.map": "/tis-site/static/js/2.7a7b663c.chunk.js.map",
     "index.html": "/tis-site/index.html",
     "static/css/main.6dea0f05.chunk.css.map": "/tis-site/static/css/main.6dea0f05.chunk.css.map",
-    "static/js/2.29cae5b9.chunk.js.LICENSE.txt": "/tis-site/static/js/2.29cae5b9.chunk.js.LICENSE.txt",
+    "static/js/2.7a7b663c.chunk.js.LICENSE.txt": "/tis-site/static/js/2.7a7b663c.chunk.js.LICENSE.txt",
     "static/media/logo.2d9cc747.png": "/tis-site/static/media/logo.2d9cc747.png"
   },
   "entrypoints": [
     "static/js/runtime-main.df3cd2d6.js",
-    "static/js/2.29cae5b9.chunk.js",
+    "static/js/2.7a7b663c.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.66e45e46.chunk.js"
+    "static/js/main.2ee932a8.chunk.js"
   ]
 }
