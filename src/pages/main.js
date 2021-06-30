@@ -25,6 +25,8 @@ import ClientVehicles from './clients/vehicles';
 import ClientDrivers from './clients/drivers';
 import ClientPolicies from './clients/policies';
 import ClientDocs from './clients/documents';
+import ClientCertificate from './clients/certificates';
+
 // 3973E5 primary
 // A5C0F3 secondary
 // FF0000 red
@@ -323,6 +325,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientApps')}
                                 >
                                     Applications
                                 </Button>
@@ -331,6 +334,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => handleAction('ClientCerts')}
                                 >
                                     Certificates
                                 </Button>
@@ -405,6 +409,16 @@ export default function Main() {
                 {action === 'ClientDocs' &&
                 (
                     <ClientDocs cid={clientId}/>
+                )}
+
+                {/* {action === 'ClientApps' &&
+                (
+                    <ClientCertificate cid={clientId}/>
+                )} */}
+
+                {action === 'ClientCerts' &&
+                (
+                    <ClientCertificate cid={clientId}/>
                 )}
 
             </Box>

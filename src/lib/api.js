@@ -110,6 +110,16 @@ export const clientCoverages = async(id) => {
   return data;
 }
 
+export const clientCompanies = async(id) => {
+  let endpoint = `clientCompanies.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
 ///////////////////////////////////POST///////////////////////////////////
 
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {
@@ -242,6 +252,26 @@ export const clientUpdateCoverages = async (coverData) => {
   let endpoint = `clientUpdateCoverages.php`;
 
   const postData = coverData
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientNewCompany = async (info) => {
+  let endpoint = `clientNewCompany.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientRemoveCompany = async (info) => {
+  let endpoint = `clientRemoveCompany.php`;
+
+  const postData = info
   
   let data = HTTP.POST(endpoint, postData);
 

@@ -36,6 +36,8 @@ export const POST = async (endpoint, postData) => {
   return json;
 }
 
+//Create file upload api call
+
 // exports.DELETE = async (endpoint, postData) => {
 //   let url = `${API_URL}${endpoint}`;
 
