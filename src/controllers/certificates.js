@@ -66,3 +66,64 @@ export const RemoveCompany = async(data) =>{
 
     return true;
 }
+
+export const Certificates = async(id) =>{
+    try{
+        var result = await API.clientCertificates(id);
+    }
+    catch(e){
+        console.error(`Controller Error : CERTIFICATES.CERTIFICATES \n${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    var raw = result.certificates;
+    var certificates = [];
+
+    for(var i = 0; i < raw.length; i++){
+        var certificate = {
+            id: raw[i][0],
+            holder: raw[i][1],
+            date: raw[i][2],
+        }
+
+        certificates.push(certificate);
+    }
+
+    return certificates;
+}
+
+export const NewCertificate = async(id) =>{
+    try{
+        var result = await API.clientNewCertificate(id);
+    }
+    catch(e){
+        console.error(`Controller Error : CERTIFICATES.NEW CERTIFICATE \n${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return result;
+}
+
+export const NewCertificatePdf = async(id) =>{
+    try{
+        var result = await API.clientNewCertificatePdf(id);
+    }
+    catch(e){
+        console.error(`Controller Error : CERTIFICATES.NEW CERTIFICATE PDF\n${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return result;
+}

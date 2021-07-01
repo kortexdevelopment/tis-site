@@ -11,21 +11,17 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import TextField from '@material-ui/core/TextField';
 import Divider from '@material-ui/core/Divider';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
-import SaveIcon from '@material-ui/icons/Save';
 import IconButton from '@material-ui/core/IconButton';
 import DescriptionIcon from '@material-ui/icons/Description';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
-import Modal from '@material-ui/core/Modal';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import PrintIcon from '@material-ui/icons/Print';
 
-import { Companies, NewCompany, RemoveCompany} from '../../controllers/certificates';
+import Modal from '@material-ui/core/Modal';
+
+import { Companies, NewCompany, RemoveCompany,
+        Certificates, NewCertificate, NewCertificatePdf } from '../../controllers/certificates';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,13 +57,17 @@ export default function ClientCertificate(props) {
     const [isAction, doAction] = React.useState(true); //Enables and disbles action buttons on the list
     const [companies, setCompanies] = React.useState([]);
 
+    const [work, inWork] = React.useState(false);
     const [lastId, setLast] = React.useState(-1);
+    const [fileId, setFile] = React.useState(-1);
 
     const [name, newName] = React.useState('');
     const [street, newStreet] = React.useState('');
     const [city, newCity] = React.useState('');
     const [state, newState] = React.useState('');
     const [zip, newZip] = React.useState('');
+
+    const [history, setHistory] = React.useState([]);
 
     const handleTabs = (event, newValue) =>{
         setNav(newValue);
@@ -92,6 +92,12 @@ export default function ClientCertificate(props) {
         newState('');
         newZip('');
 
+        if(lastId > 0){
+            setLast(-1);
+            setFile(-1);
+            handleRefresh();
+        }
+
     }, [isNew])
 
     const idGetter = (params) =>{
@@ -106,11 +112,20 @@ export default function ClientCertificate(props) {
             c = undefined;
         }
 
-        if(c === undefined){
+        try{
+            var crt = await Certificates(props.cid);
+        }
+        catch(e){
+            crt = undefined;
+        }
+
+        if(c === undefined || crt === undefined){
             didError(true);
         }
 
         setCompanies(c);
+        setHistory(crt);
+
         isLoad(false);
     }
 
@@ -126,6 +141,8 @@ export default function ClientCertificate(props) {
             location: `${street}::${city}::${state}::${zip}`,
         }
 
+        inWork(true);
+
         try{
             var result = await NewCompany(data);
         }
@@ -135,16 +152,86 @@ export default function ClientCertificate(props) {
 
         if(result === undefined){
             alert('Ups... Somethin went wrong while creating the company. Please, try again');
+            inWork(false);
+            return;
+        }
+        setLast(result.id);
+
+        inWork(false);
+    }
+
+    const handleCertificate = async() => {
+        inWork(true);
+
+        try{
+            var result = await NewCertificate(lastId);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... Somethin went wrong while creating the certificate. Please, try again');
+            inWork(false);
             return;
         }
 
-        alert('Company created successfully!');
+        try{
+            var rFile = await NewCertificatePdf(result.lid);
+        }
+        catch(e){
+            rFile = undefined;
+        }
 
-        setLast(result.id);
+        if(rFile === undefined){
+            alert('Ups... Somethin went wrong while creating the certificate. Please, try again');
+            inWork(false);
+            return;
+        }
+
+        setFile(result.lid);
+        setLast(-1);
+
+        inWork(false);
+    }
+
+    const handleCertificateDirect = async(id) => {
+        doAction(false);
+        try{
+            var result = await NewCertificate(id);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... Somethin went wrong while creating the certificate. Please, try again');
+            doAction(true);
+            return;
+        }
+
+        try{
+            var rFile = await NewCertificatePdf(result.lid);
+        }
+        catch(e){
+            rFile = undefined;
+        }
+
+        if(rFile === undefined){
+            alert('Ups... Somethin went wrong while creating the certificate. Please, try again');
+            doAction(true);
+            return;
+        }
+
+        doAction(true);
+        handleFile(result.lid);
         handleRefresh();
+    }
 
-        //Bloquear y mostrar opciones de continuar
-        doNew(false);
+    const handleFile = async(id) => {
+        //Open file in explorer using the url + fileID
+        var url = `https://www.truckinsurancesolutions.org/system/ready_files/certs/cert${id}.pdf`;
+        window.open(url, '_blank');
     }
 
     const handleRemove = async(id) => {
@@ -180,15 +267,19 @@ export default function ClientCertificate(props) {
             c = undefined;
         }
 
-        if(c === undefined){
+        try{
+            var crt = await Certificates(props.cid);
+        }
+        catch(e){
+            crt = undefined;
+        }
+
+        if(c === undefined || crt === undefined){
             didError(true);
         }
 
         setCompanies(c);
-    }
-
-    const debugConsole = async(info) =>{
-        console.log(info);
+        setHistory(crt);
     }
 
     return (
@@ -328,6 +419,7 @@ export default function ClientCertificate(props) {
                                                         backgroundColor: '#3973E5',
                                                         marginRight: 12
                                                     }}
+                                                    onClick={() => handleCertificateDirect(params.value)}
                                                 >
                                                     <DescriptionIcon />
                                                 </IconButton>
@@ -362,8 +454,57 @@ export default function ClientCertificate(props) {
             
             {nav === 1 && //history Info
             (
-                <>
-                </>
+                <Container
+                    style={{
+                        visibility: loadInfo === true ? 'hidden' : 'visible',
+                        marginTop: 60,
+                    }}
+                >
+                    <div style={{ height: 500, width: '100%' }}>
+                        <DataGrid 
+                            style={{
+                                backgroundColor:'#FF0000'
+                            }}
+                            columns={[
+                                {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
+                                {field: 'holder', headerName: 'HOLDER/COMPANY NAME', headerClassName: classes.gridHeader, flex: 1},
+                                {field: 'date', headerName: 'DATE OF CREATION', headerClassName: classes.gridHeader, flex: 1},
+                                {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false, 
+                                    valueGetter: idGetter,
+                                    renderCell: (params) =>(
+                                        <>
+                                            <Box
+                                                style={{
+                                                    display: 'flex',
+                                                    justifyContent: 'space-evenly',
+                                                    width: '100%',
+                                                }}
+                                            >
+                                                <IconButton
+                                                    aria-label="COPY" 
+                                                    component="span"
+                                                    style={{
+                                                        color: isAction ? '#FFFFFF' : '#999999',
+                                                        backgroundColor: '#3973E5',
+                                                        marginRight: 12
+                                                    }}
+                                                    onClick={() => handleFile(params.value)}
+                                                >
+                                                    <PrintIcon />
+                                                </IconButton>
+                                            </Box>
+                                        </>
+                                    ),
+                                    }
+                                ]} 
+
+                            rows={history} 
+
+                            pageSize={7}
+                            disableColumnMenu={true}
+                        />
+                    </div>
+                </Container>
             )}
 
         </Container>
@@ -420,6 +561,7 @@ export default function ClientCertificate(props) {
                 </Box>
 
                 <TextField 
+                    disabled={lastId > 0}
                     style={{
                         marginTop: 8,
                         marginLeft: 15,
@@ -451,6 +593,7 @@ export default function ClientCertificate(props) {
                 </Box>
 
                 <TextField 
+                    disabled={lastId > 0}
                     style={{
                         marginTop: 8,
                         marginLeft: 15,
@@ -463,6 +606,7 @@ export default function ClientCertificate(props) {
                 />
 
                 <TextField 
+                    disabled={lastId > 0}
                     style={{
                         marginTop: 8,
                         marginLeft: 15,
@@ -475,6 +619,7 @@ export default function ClientCertificate(props) {
                 />
 
                 <TextField 
+                    disabled={lastId > 0}
                     style={{
                         marginTop: 8,
                         marginLeft: 15,
@@ -487,6 +632,7 @@ export default function ClientCertificate(props) {
                 />
 
                 <TextField 
+                    disabled={lastId > 0}
                     style={{
                         marginTop: 8,
                         marginLeft: 15,
@@ -500,6 +646,7 @@ export default function ClientCertificate(props) {
 
                 <Button
                     style={{
+                        display: lastId <= 0 && fileId <= 0 ? 'block' : 'none',
                         marginTop: 8,
                         marginBottom: 8,
                         marginLeft: 15,
@@ -509,8 +656,95 @@ export default function ClientCertificate(props) {
                     }}
                     onClick={handleNew}
                 >
-                    Register company & Generate certificate
+                    Register company
                 </Button>
+
+                {work && (
+                    <Box 
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            marginBottom: 8,
+                        }}
+                    >
+                        <CircularProgress 
+                            style={{
+                                color:'#3973E5'
+                            }}
+                        />
+                    </Box>
+                )}
+
+                <Box
+                    style={{
+                        display: lastId > 0 ? 'block' : 'none',
+                        margin:8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}
+                >
+                    <Typography 
+                        style={{
+                            color:"#3973E5",
+                            flex: 1,
+                            textAlign: 'center',
+                        }}
+                    >
+                        COMPANY REGISTERED SUCCESSFULLY
+                    </Typography>
+
+                    <Divider />
+
+                    <Button
+                        disabled={work}
+                        style={{
+                            marginTop: 8,
+                            marginBottom: 8,
+                            backgroundColor: '#3973E5',
+                            color: '#FFFFFF',
+                            width: '100%',
+                        }}
+                        onClick={handleCertificate}
+                    >
+                        Generate Certificate
+                    </Button>
+                </Box>
+
+                <Box
+                    style={{
+                        display: fileId > 0 ? 'block' : 'none',
+                        margin:8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}
+                >
+                    <Typography 
+                        style={{
+                            color:"#3973E5",
+                            flex: 1,
+                            textAlign: 'center',
+                        }}
+                    >
+                        CERTIFICATE CREATED SUCCESSFULLY
+                    </Typography>
+
+                    <Divider />
+
+                    <Button
+                        disabled={work}
+                        style={{
+                            marginTop: 8,
+                            marginBottom: 8,
+                            backgroundColor: '#3973E5',
+                            color: '#FFFFFF',
+                            width: '100%',
+                        }}
+                        onClick={() => handleFile(fileId)}
+                    >
+                        Visualize PDF
+                    </Button>
+                </Box>
+
             </Box>
             
         </Modal>  

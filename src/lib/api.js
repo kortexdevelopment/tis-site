@@ -120,6 +120,16 @@ export const clientCompanies = async(id) => {
   return data;
 }
 
+export const clientCertificates = async(id) => {
+  let endpoint = `clientCertificates.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
 ///////////////////////////////////POST///////////////////////////////////
 
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {
@@ -274,6 +284,25 @@ export const clientRemoveCompany = async (info) => {
   const postData = info
   
   let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientNewCertificate = async(id) => { 
+  let endpoint = `clientNewCertificate.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+export const clientNewCertificatePdf = async(id) => { 
+  let endpoint = `clientNewCertificatePdf.php`;
+
+  let urlParams = `?lid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
 
   return data;
 }
