@@ -25,6 +25,7 @@ import ClientVehicles from './clients/vehicles';
 import ClientDrivers from './clients/drivers';
 import ClientPolicies from './clients/policies';
 import ClientDocs from './clients/documents';
+import ClientApplications from './clients/applications';
 import ClientCertificate from './clients/certificates';
 
 // 3973E5 primary
@@ -325,7 +326,7 @@ export default function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
-                                    onClick={() => handleAction('ClientApps')}
+                                    onClick={() => handleAction('ClientApplications')}
                                 >
                                     Applications
                                 </Button>
@@ -411,10 +412,10 @@ export default function Main() {
                     <ClientDocs cid={clientId}/>
                 )}
 
-                {/* {action === 'ClientApps' &&
+                {action === 'ClientApplications' &&
                 (
-                    <ClientCertificate cid={clientId}/>
-                )} */}
+                    <ClientApplications cid={clientId}/>
+                )}
 
                 {action === 'ClientCerts' &&
                 (

@@ -254,7 +254,6 @@ export default function ClientCertificate(props) {
             return;
         }
 
-        alert('Company removed successfully!');
         await handleRefresh();
         doAction(true);
     }
