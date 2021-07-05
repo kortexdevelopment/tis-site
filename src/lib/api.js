@@ -130,6 +130,36 @@ export const clientCertificates = async(id) => {
   return data;
 }
 
+export const applicationAgents = async() => {
+  let endpoint = `applicationAgents.php`;
+
+  let urlParams = ``
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
+export const applicationVendors = async(id) => {
+  let endpoint = `applicationVendors.php`;
+
+  let urlParams = `?id=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
+export const applicationTemplates = async(aid, vid) => {
+  let endpoint = `applicationTemplates.php`;
+
+  let urlParams = `?aid=${aid}&vid=${vid}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
 ///////////////////////////////////POST///////////////////////////////////
 
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {

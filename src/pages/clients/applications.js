@@ -32,10 +32,11 @@ import StepLabel from '@material-ui/core/StepLabel';
 
 import DoneIcon from '@material-ui/icons/Done';
 
-
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
+
+import { Agents, Vendors, Templates } from '../../controllers/applications';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -80,10 +81,210 @@ export default function ClientApplications(props) {
     const [loadInfo, isLoading] = React.useState(true); // Ininiclizar en true
     const [loadError, didError] = React.useState(false);
     
-    const [agents, setAgent] = React.useState([]);
+    const [agents, setAgents] = React.useState([]);
+    const [idAgent, setIdAgent] = React.useState(0);
+
+    const [vendors, setVendors] = React.useState([]);
+    const [idVendor, setIdVendor] = React.useState(0);
+
+    const [templates, setTemplates] = React.useState([]);
+    const [idTemplate, setIdTemplate] = React.useState(0);
+
+    const [aviable, setAviable] = React.useState({
+        liability: false,
+        cargo: false,
+        general: false,
+        tractor: false,
+        trailer: false,
+        non: false,
+        interchange: false,
+    });
+
+    const [covers, setCovers] = React.useState({
+        liability: false,
+        cargo: false,
+        general: false,
+        tractor: false,
+        trailer: false,
+        non: false,
+        interchange: false,
+    });
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
+    }
+
+    React.useEffect(() => {
+        if(!loadInfo){
+            return;
+        }
+
+        handleLoad();
+    })
+
+    React.useEffect(() => {
+        if(idAgent === 0){
+            return;
+        }
+
+        handleVendor();
+    }, [idAgent])
+
+    React.useEffect(() => {
+        if(idVendor === 0){
+            return;
+        }
+        handleTemplate();
+    }, [idVendor])
+
+    React.useEffect(() => {
+        if(idTemplate === 0){
+            return;
+        }
+
+        handleCoverages();
+    }, [idTemplate])
+
+    const handleSelect = async(id) =>{
+        switch(activeStep){
+            case 0:
+                setIdAgent(id);
+                break;
+            case 1:
+                setIdVendor(id);
+                break;
+            case 2:
+                setIdTemplate(id);
+                break;
+        }
+    }
+
+    const handleReturn = async() =>{
+        setActiveStep(activeStep - 1);
+
+        switch(activeStep){
+            case 0:
+                setIdAgent(0);
+                break;
+            case 1:
+                setIdVendor(0);
+                break;
+            case 2:
+                setIdTemplate(0);
+                break;
+        }
+    }
+
+    const handleLoad = async() => {
+        try{
+            var result = await Agents();
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            didError(true);
+            return;
+        }
+
+        setAgents(result);
+        isLoading(false);
+    }
+
+    const handleVendor = async() =>{
+        isLoading(true);
+
+        try{
+            var result = await Vendors(idAgent);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            didError(true);
+            return;
+        }
+
+        setVendors(result);
+        setActiveStep(1);
+        isLoading(false);
+    }
+
+    const handleTemplate = async() => {
+        isLoading(true);
+
+        try{
+            var result = await Templates(idAgent, idVendor);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            didError(true);
+            return;
+        }
+
+        setTemplates(result);
+        setActiveStep(2);
+        isLoading(false);
+    }
+
+    const handleCoverages = async() =>{
+        isLoading(true);
+        var template = { ...templates.find(x => x.id === idTemplate)};
+        var covers = template.covers;
+
+        aviable.liability = !covers.includes('1');
+        aviable.cargo = !covers.includes('2');
+        aviable.general = !covers.includes('3');
+        aviable.tractor = !covers.includes('4');
+        aviable.trailer = !covers.includes('5');
+        aviable.non = !covers.includes('6');
+        aviable.interchange = !covers.includes('7');
+
+        setAviable(aviable);
+        
+        console.log(aviable);
+        console.log(covers);
+
+        setActiveStep(3);
+        isLoading(false);
+    }
+
+    const handleCoverChange = (e) => {
+        setCovers({...covers, [e.target.name]: e.target.checked});
+    }
+
+    const handleCreation = async() => {
+        console.log(`Agent:${idAgent} Vendor:${idVendor} Template:${idTemplate} Covers:`);
+        console.log(covers);
+        
+        //Verificar que tenga al menos una covertura
+        //Solo verificar las que esta dispobibles
+        var _covers = []
+        var _pass = false;
+        for(const prop in aviable){
+            if(aviable[prop] === false){
+                _covers.push(covers[prop]);
+            }
+        }
+
+        if(_covers.some(Boolean)){
+            _pass = true;
+        }
+
+        if(_pass === false){
+            alert('Must select at least one coverge from the aviable options');
+            return;
+        }
+
+        //Generar usando el CreateLink
+        //Generar ifo con el CreateData
+        //postear la creacion del pdf al CreatePPDF en un ciclo con los files que ocupa.
+
     }
 
     return (
@@ -138,6 +339,24 @@ export default function ClientApplications(props) {
                     })}
                 </Stepper>
             </div>
+
+            <Box
+                style={{
+                    display: activeStep === 0 ? 'none' : 'flex',
+                    justifyContent: 'flex-end',
+                    marginBottom: 12,
+                }}
+            >
+                <Button
+                    style={{
+                        backgroundColor: '#3973E5',
+                        color: '#FFFFFF'
+                    }}
+                    onClick={handleReturn}
+                >
+                    STEP BACK
+                </Button>
+            </Box>
                 
             {loadInfo && (
                 <>
@@ -196,10 +415,11 @@ export default function ClientApplications(props) {
                                                 aria-label="SELECT" 
                                                 component="span"
                                                 style={{
-                                                    color:'#FF0000',
+                                                    color:'#FFFFFF',
                                                     backgroundColor: '#3973E5',
                                                     marginRight: 12
                                                 }}
+                                                onClick={() => handleSelect(params.value)}
                                             >
                                                 <DoneIcon />
                                             </IconButton>
@@ -242,10 +462,11 @@ export default function ClientApplications(props) {
                                                 aria-label="SELECT" 
                                                 component="span"
                                                 style={{
-                                                    color:'#FF0000',
+                                                    color:'#FFFFFF',
                                                     backgroundColor: '#3973E5',
                                                     marginRight: 12
                                                 }}
+                                                onClick={() => handleSelect(params.value)}
                                             >
                                                 <DoneIcon />
                                             </IconButton>
@@ -255,7 +476,7 @@ export default function ClientApplications(props) {
                                 }
                             ]} 
 
-                        rows={agents} 
+                        rows={vendors} 
 
                         pageSize={7}
                         disableColumnMenu={true}
@@ -272,8 +493,8 @@ export default function ClientApplications(props) {
                         }}
                         columns={[
                             {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
-                            {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1},
-                            {field: 'covers', headerName: 'COVERAGES', headerClassName: classes.gridHeader, flex: 1},
+                            {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: .3},
+                            {field: 'coversTxt', headerName: 'COVERAGES', headerClassName: classes.gridHeader, flex: 1},
                             {field: 'action', headerName: 'SELECT', headerClassName: classes.gridHeader, flex: .25, sortable: false, 
                                 valueGetter: idGetter,
                                 renderCell: (params) =>(
@@ -289,10 +510,11 @@ export default function ClientApplications(props) {
                                                 aria-label="SELECT" 
                                                 component="span"
                                                 style={{
-                                                    color:'#FF0000',
+                                                    color:'#FFFFFF',
                                                     backgroundColor: '#3973E5',
                                                     marginRight: 12
                                                 }}
+                                                onClick={() => handleSelect(params.value)}
                                             >
                                                 <DoneIcon />
                                             </IconButton>
@@ -302,7 +524,7 @@ export default function ClientApplications(props) {
                                 }
                             ]} 
 
-                        rows={agents} 
+                        rows={templates} 
 
                         pageSize={7}
                         disableColumnMenu={true}
@@ -345,8 +567,11 @@ export default function ClientApplications(props) {
                         <FormControlLabel
                             control={
                             <Checkbox
+                                disabled={aviable.liability}
                                 name="liability"
                                 color="primary"
+                                checked={covers.liability}
+                                onChange={handleCoverChange}
                             />
                             }
                             label="Liability"
@@ -354,8 +579,11 @@ export default function ClientApplications(props) {
                         <FormControlLabel
                             control={
                             <Checkbox
+                                disabled={aviable.cargo}
                                 name="cargo"
                                 color="primary"
+                                checked={covers.cargo}
+                                onChange={handleCoverChange}
                             />
                             }
                             label="Cargo"
@@ -363,8 +591,11 @@ export default function ClientApplications(props) {
                         <FormControlLabel
                             control={
                             <Checkbox
+                                disabled={aviable.general}
                                 name="general"
                                 color="primary"
+                                checked={covers.general}
+                                onChange={handleCoverChange}
                             />
                             }
                             label="Gral. Liability"
@@ -402,26 +633,35 @@ export default function ClientApplications(props) {
                         <FormControlLabel
                             control={
                             <Checkbox
-                                name="damage"
+                                disabled={aviable.tractor}
+                                name="tractor"
                                 color="primary"
+                                checked={covers.tractor}
+                                onChange={handleCoverChange}
                             />
                             }
-                            label="P. Damage"
+                            label="Tactor"
                         />
                         <FormControlLabel
                             control={
                             <Checkbox
-                                name="interchange"
+                                disabled={aviable.trailer}
+                                name="trailer"
                                 color="primary"
+                                checked={covers.trailer}
+                                onChange={handleCoverChange}
                             />
                             }
-                            label="T. Interchange"
+                            label="Trailer"
                         />
                         <FormControlLabel
                             control={
                             <Checkbox
+                                disabled={aviable.non}
                                 name="non"
                                 color="primary"
+                                checked={covers.non}
+                                onChange={handleCoverChange}
                             />
                             }
                             label="T. Non-owned"
@@ -429,11 +669,14 @@ export default function ClientApplications(props) {
                         <FormControlLabel
                             control={
                             <Checkbox
-                                name="unisured"
+                                disabled={aviable.interchange}
+                                name="interchange"
                                 color="primary"
+                                checked={covers.interchange}
+                                onChange={handleCoverChange}
                             />
                             }
-                            label="Unisured Motorist"
+                            label="T. Interchage"
                         />
                     </FormGroup>
 
@@ -450,6 +693,7 @@ export default function ClientApplications(props) {
                                 backgroundColor: '#3973E5',
                                 color: '#FFFFFF'
                             }}
+                            onClick={handleCreation}
                         >
                             GENERATE APPLICATION
                         </Button>
