@@ -23,6 +23,8 @@ import Modal from '@material-ui/core/Modal';
 import { Companies, NewCompany, RemoveCompany,
         Certificates, NewCertificate, NewCertificatePdf } from '../../controllers/certificates';
 
+import { CertViwer } from '../../controllers/certViwer';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -69,6 +71,9 @@ export default function ClientCertificate(props) {
 
     const [history, setHistory] = React.useState([]);
 
+    const [viwer, showViwer] = React.useState(false);
+    const [file, setFileUrl] = React.useState('');
+
     const handleTabs = (event, newValue) =>{
         setNav(newValue);
     }
@@ -99,6 +104,14 @@ export default function ClientCertificate(props) {
         }
 
     }, [isNew])
+
+    React.useEffect(() => {
+        if(viwer === true){
+            return;
+        }
+
+        setFileUrl('');
+    }, [viwer])
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
@@ -229,9 +242,9 @@ export default function ClientCertificate(props) {
     }
 
     const handleFile = async(id) => {
-        //Open file in explorer using the url + fileID
         var url = `https://www.truckinsurancesolutions.org/system/ready_files/certs/cert${id}.pdf`;
-        window.open(url, '_blank');
+        setFileUrl(url);
+        showViwer(true);
     }
 
     const handleRemove = async(id) => {
@@ -747,6 +760,41 @@ export default function ClientCertificate(props) {
             </Box>
             
         </Modal>  
+
+        <Modal
+            open={viwer}
+            onClose={() => showViwer(false)}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+        >
+            <Box
+                style={{
+                    position: 'absolute',
+                    top: '10%',
+                    left: '15%',
+                    width: '70%',
+                    backgroundColor: '#FFFFFF',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <AppBar position="static">
+                        <Toolbar 
+                            variant="dense"
+                            style={{
+                                backgroundColor:'#3973E5'
+                            }}
+                        >
+                            <Typography variant="h6" color="inherit">
+                                CERTIFICATE VIWER
+                            </Typography>
+                        </Toolbar>
+                </AppBar>
+
+                <CertViwer file={file} />
+            </Box>
+
+        </Modal>
 
     </>
 );

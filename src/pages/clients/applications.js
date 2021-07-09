@@ -38,7 +38,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 import { Agents, Vendors, Templates,
         CreateLink, CreateData, CreatePdf } from '../../controllers/applications';
-import { applicationAgents } from '../../lib/api';
+
+import { AppViwer } from '../../controllers/appViwer';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -94,7 +95,7 @@ export default function ClientApplications(props) {
 
     const [Application, setApplication] = React.useState({
         id: 0,
-        files: 0,
+        files: [],
     });
 
     const [aviable, setAviable] = React.useState({
@@ -282,8 +283,6 @@ export default function ClientApplications(props) {
         console.log(`Agent:${idAgent} Vendor:${idVendor} Template:${idTemplate} Covers:`);
         console.log(covers);
         
-        //Verificar que tenga al menos una covertura
-        //Solo verificar las que esta dispobibles
         var _coversAv = []
         var _coversIndex = ['', 'liability', 'cargo', 'general', 'tractor', 'trailer', 'non', 'interchange'];
         var _coversArray = [];
@@ -311,7 +310,6 @@ export default function ClientApplications(props) {
             }
         }
 
-        //Generar usando el CreateLink cid aid vid link covers
         isLoading(true);
 
         var linkData = {
@@ -352,7 +350,6 @@ export default function ClientApplications(props) {
 
         var dataArray = await dataToArray(dataCreated.data);
 
-        //postear la creacion del pdf al CreatePPDF en un ciclo con los files que ocupa.
         for(var i = 0; i < dataCreated.files.length; i++){
             var fileData = {
                 file: dataCreated.files[i],
@@ -366,8 +363,16 @@ export default function ClientApplications(props) {
             catch(e){}
         }
 
+        Application.files = [];
+
+        for(var i = 0; i < dataCreated.files.length; i++)
+        {
+            var file = `app_${linkCreated.id}_${(i + 1)}.pdf`;
+            var url = `https://www.truckinsurancesolutions.org/system/ready_files/${file}`;
+            Application.files.push(url);
+        }
+
         Application.id = linkCreated.id;
-        Application.files = dataCreated.files.length;
 
         setApplication(Application);
         setActiveStep(4);
@@ -380,15 +385,6 @@ export default function ClientApplications(props) {
         }
 
         return result;
-    }
-
-    const handleFiles = async() => {
-        for(var i = 0; i < Application.files; i++)
-        {
-            var file = `app_${Application.id}_${(i + 1)}.pdf`;
-            var url = `https://www.truckinsurancesolutions.org/system/ready_files/${file}`;
-            window.open(url, '_blank');
-        }
     }
 
     return (
@@ -408,13 +404,15 @@ export default function ClientApplications(props) {
             </AppBar>
         </div>
 
-        
-
         <Container
             className={classes.containerRoot}
         >
 
-            <Box>
+            <Box
+                style={{
+                    display: 'inline-flex',
+                }}
+            >
 
                 <Typography 
                     variant='h6'
@@ -425,6 +423,24 @@ export default function ClientApplications(props) {
                 >
                     CREATE APPLICATION
                 </Typography>
+
+                <Box
+                    style={{
+                        display: activeStep === 0 ? 'none' : 'flex',
+                        justifyContent: 'flex-end',
+                        marginBottom: 4,
+                    }}
+                >
+                    <Button
+                        style={{
+                            backgroundColor: '#3973E5',
+                            color: '#FFFFFF'
+                        }}
+                        onClick={handleReturn}
+                    >
+                        STEP BACK
+                    </Button>
+                </Box>
 
             </Box>
 
@@ -443,24 +459,6 @@ export default function ClientApplications(props) {
                     })}
                 </Stepper>
             </div>
-
-            <Box
-                style={{
-                    display: activeStep === 0 ? 'none' : 'flex',
-                    justifyContent: 'flex-end',
-                    marginBottom: 12,
-                }}
-            >
-                <Button
-                    style={{
-                        backgroundColor: '#3973E5',
-                        color: '#FFFFFF'
-                    }}
-                    onClick={handleReturn}
-                >
-                    STEP BACK
-                </Button>
-            </Box>
                 
             {loadInfo && (
                 <>
@@ -809,46 +807,8 @@ export default function ClientApplications(props) {
             {(activeStep === 4 && !loadInfo) && 
                 (
                 <Container>
-                    <Box
-                        style={{
-                            marginLeft: 15,
-                            marginRight: 15,
-                        }}
-                    >
 
-                        <Typography 
-                            variant='h6'
-                            style={{
-                                color:"#3973E5",
-                                flex: 1,
-                            }}
-                        >
-                            Application Complete!
-                        </Typography>
-
-                        <Divider />
-
-                    </Box>
-
-                    <Box
-                        style={{
-                            display:'flex',
-                            marginLeft: 15,
-                            marginRight: 15,
-                            marginTop: 24,
-                            justifyContent: 'center',
-                        }}
-                    >
-                        <Button
-                            style={{
-                                backgroundColor: '#3973E5',
-                                color: '#FFFFFF'
-                            }}
-                            onClick={handleFiles}
-                        >
-                            PREVIEW PDF
-                        </Button>
-                    </Box>
+                    <AppViwer files={Application.files}/>
 
                 </Container>
             )}
