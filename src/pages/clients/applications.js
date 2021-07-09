@@ -36,7 +36,9 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import { Agents, Vendors, Templates } from '../../controllers/applications';
+import { Agents, Vendors, Templates,
+        CreateLink, CreateData, CreatePdf } from '../../controllers/applications';
+import { applicationAgents } from '../../lib/api';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -78,7 +80,7 @@ export default function ClientApplications(props) {
     const steps = ['Select Agent', 'Select Insurance Company', 'Select Application', 'Select Coverages', 'PDF is Ready!'];
     const [activeStep, setActiveStep] = React.useState(0);
 
-    const [loadInfo, isLoading] = React.useState(true); // Ininiclizar en true
+    const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
     
     const [agents, setAgents] = React.useState([]);
@@ -89,6 +91,11 @@ export default function ClientApplications(props) {
 
     const [templates, setTemplates] = React.useState([]);
     const [idTemplate, setIdTemplate] = React.useState(0);
+
+    const [Application, setApplication] = React.useState({
+        id: 0,
+        files: 0,
+    });
 
     const [aviable, setAviable] = React.useState({
         liability: false,
@@ -139,11 +146,36 @@ export default function ClientApplications(props) {
 
     React.useEffect(() => {
         if(idTemplate === 0){
+            
+            covers.liability = false;
+            covers.cargo = false;
+            covers.general = false;
+            covers.tractor = false;
+            covers.trailer = false;
+            covers.non = false;
+            covers.interchange = false;
+
+            setCovers(covers);
+
             return;
         }
 
         handleCoverages();
     }, [idTemplate])
+
+    React.useEffect(() => {
+        switch(activeStep){
+            case 0:
+                setIdAgent(0);
+                break;
+            case 1:
+                setIdVendor(0);
+                break;
+            case 2:
+                setIdTemplate(0);
+                break;
+        }
+    }, [activeStep]);
 
     const handleSelect = async(id) =>{
         switch(activeStep){
@@ -156,23 +188,15 @@ export default function ClientApplications(props) {
             case 2:
                 setIdTemplate(id);
                 break;
+            case 4:
+        	    isLoading(false);
+                break;
         }
     }
 
     const handleReturn = async() =>{
         setActiveStep(activeStep - 1);
-
-        switch(activeStep){
-            case 0:
-                setIdAgent(0);
-                break;
-            case 1:
-                setIdVendor(0);
-                break;
-            case 2:
-                setIdTemplate(0);
-                break;
-        }
+        didError(false);
     }
 
     const handleLoad = async() => {
@@ -246,10 +270,6 @@ export default function ClientApplications(props) {
         aviable.interchange = !covers.includes('7');
 
         setAviable(aviable);
-        
-        console.log(aviable);
-        console.log(covers);
-
         setActiveStep(3);
         isLoading(false);
     }
@@ -264,15 +284,19 @@ export default function ClientApplications(props) {
         
         //Verificar que tenga al menos una covertura
         //Solo verificar las que esta dispobibles
-        var _covers = []
+        var _coversAv = []
+        var _coversIndex = ['', 'liability', 'cargo', 'general', 'tractor', 'trailer', 'non', 'interchange'];
+        var _coversArray = [];
+
         var _pass = false;
+        
         for(const prop in aviable){
             if(aviable[prop] === false){
-                _covers.push(covers[prop]);
+                _coversAv.push(covers[prop]);
             }
         }
 
-        if(_covers.some(Boolean)){
+        if(_coversAv.some(Boolean)){
             _pass = true;
         }
 
@@ -281,10 +305,90 @@ export default function ClientApplications(props) {
             return;
         }
 
-        //Generar usando el CreateLink
-        //Generar ifo con el CreateData
-        //postear la creacion del pdf al CreatePPDF en un ciclo con los files que ocupa.
+        for(const prop in covers){
+            if(covers[prop] === true){
+                _coversArray.push(_coversIndex.indexOf(prop));
+            }
+        }
 
+        //Generar usando el CreateLink cid aid vid link covers
+        isLoading(true);
+
+        var linkData = {
+            cid: props.cid,
+            aid: idAgent,
+            vid: idVendor,
+            lid: idTemplate,
+            covers: _coversArray,
+        }
+
+        try{
+            var linkCreated = await CreateLink(linkData);
+        }
+        catch(e){
+            linkCreated = undefined;
+        }
+
+        if(linkCreated === undefined){
+            didError(true);
+            return;
+        }
+
+        var dataData = {
+            id: linkCreated.id,
+        }
+
+        try{
+            var dataCreated = await CreateData(dataData);
+        }
+        catch(e){
+            dataCreated = undefined;
+        }
+
+        if(dataCreated === undefined){
+            didError(true);
+            return;
+        }
+
+        var dataArray = await dataToArray(dataCreated.data);
+
+        //postear la creacion del pdf al CreatePPDF en un ciclo con los files que ocupa.
+        for(var i = 0; i < dataCreated.files.length; i++){
+            var fileData = {
+                file: dataCreated.files[i],
+                data: dataArray,
+                saved: `app_${linkCreated.id}_${(i + 1)}.pdf`,
+            }
+
+            try{
+                var _ = await CreatePdf(fileData);
+            }
+            catch(e){}
+        }
+
+        Application.id = linkCreated.id;
+        Application.files = dataCreated.files.length;
+
+        setApplication(Application);
+        setActiveStep(4);
+    }
+
+    const dataToArray = async(data) => {
+        var result = [];
+        for(const prop in data){
+            result.push(`${prop}|${data[prop]}`);
+        }
+
+        return result;
+    }
+
+    const handleFiles = async() => {
+        for(var i = 0; i < Application.files; i++)
+        {
+            var file = `app_${Application.id}_${(i + 1)}.pdf`;
+            var url = `https://www.truckinsurancesolutions.org/system/ready_files/${file}`;
+            window.open(url, '_blank');
+        }
     }
 
     return (
@@ -740,6 +844,7 @@ export default function ClientApplications(props) {
                                 backgroundColor: '#3973E5',
                                 color: '#FFFFFF'
                             }}
+                            onClick={handleFiles}
                         >
                             PREVIEW PDF
                         </Button>

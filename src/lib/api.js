@@ -327,12 +327,43 @@ export const clientNewCertificate = async(id) => {
 
   return data;
 }
+
 export const clientNewCertificatePdf = async(id) => { 
   let endpoint = `clientNewCertificatePdf.php`;
 
   let urlParams = `?lid=${id}`
 
   let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
+export const applicationCreateLink = async (info) => {
+  let endpoint = `applicationCreateLink.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const applicationCreateData = async (info) => {
+  let endpoint = `applicationCreateData.php`;
+
+  let urlParams = `?id=${info.id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
+export const applicationCreatePdf = async (info) => {
+  let endpoint = `applicationCreatePdf.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
 
   return data;
 }

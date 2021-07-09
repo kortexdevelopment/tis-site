@@ -97,3 +97,51 @@ export const Templates = async(aid, vid) =>{
 
     return templates;
 }
+
+export const CreateLink = async(data) => {
+    try{
+        var result = await API.applicationCreateLink(data);
+    }
+    catch(e){
+        console.error(`Controller Error : APPLICATION.CREATE LINK\n${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return result;
+}
+
+export const CreateData = async(data) => {
+    try{
+        var result = await API.applicationCreateData(data);
+    }
+    catch(e){
+        console.error(`Controller Error : APPLICATION.CREATE DATA\n${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return result;
+}
+
+export const CreatePdf = async(data) => {
+    try{
+        var result = await API.applicationCreatePdf(data);
+    }
+    catch(e){
+        console.error(`Controller Error : APPLICATION.CREATE PDF\n${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return result;
+}
