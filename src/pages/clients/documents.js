@@ -15,10 +15,11 @@ import Modal from '@material-ui/core/Modal';
 import { Button } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 
-import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+
+import { Upload } from '../../controllers/documents';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,21 +63,46 @@ const rows = [
 // A5C0F3 secondary
 // FF0000 red
 
-export default function ClientDocs() {
-  const classes = useStyles();
+export default function ClientDocs(props) {
+    const classes = useStyles();
 
-  const [newUser, doNew] = React.useState(false);
-  const [newLevel, setLevel] = React.useState('');
+    const [newUser, doNew] = React.useState(false);
+    const [upload, onUpload] = React.useState(false);
+    const [file, setFile] = React.useState('');
+    const [name, setName] = React.useState('');
+    const [client, setClient] = React.useState(false);
 
     React.useEffect(() => {
         if(newUser === false)
         {
-            setLevel('');
+            setClient(false);
+            setName('');
+            setFile('');
         }
     }, [newUser]);
 
     const uploadFile = async() =>
     {
+        var data = new FormData();
+
+        data.append('file', file);
+        data.append('cid', props.cid);
+        data.append('name', name);
+        data.append('type', client);
+
+        onUpload(true);
+
+        try{
+            var result = await Upload(data);
+        }
+        catch(e){
+            alert('Ups... Something went wrong while uploading the file. Please, try again');
+            onUpload(false);
+            return
+        }
+
+        alert('File uploaded successfully!');
+        onUpload(false);
         doNew(false);
     }
 
@@ -203,7 +229,7 @@ export default function ClientDocs() {
                 style={{
                     position: 'absolute',
                     top: '10%',
-                    left: '40%',
+                    left: '35%',
                     width: '40%',
                     backgroundColor: '#FFFFFF',
                     display: 'flex',
@@ -230,6 +256,7 @@ export default function ClientDocs() {
                     style={{
                         display: 'none',
                     }}
+                    onChange={(e) => setFile(e.target.files[0])}
                 />
                 <label 
                     htmlFor="contained-button-file"
@@ -240,9 +267,10 @@ export default function ClientDocs() {
                             marginBottom: 8,
                             marginLeft: '25%',
                             marginRight: '25%',
-                            backgroundColor: '#FF0000',
+                            backgroundColor: '#EE0000',
                             color: '#FFFFFF',
                             width: '50%',
+                            fontWeight: 'bold',
                         }}
                         component="span"
                     >
@@ -258,6 +286,8 @@ export default function ClientDocs() {
                     }}
                     label="File Description"
                     variant="filled" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                 />
 
                 <FormControl 
@@ -268,16 +298,10 @@ export default function ClientDocs() {
                         marginRight: 15,
                     }}
                 >
-                    <InputLabel id="levelLabel">Access Level</InputLabel>
-                    <Select
-                        labelId="levelLabel"
-                        value={newLevel}
-                        onChange={(e) => setLevel(e.target.value)}
-                    >
-                        <MenuItem value="">Select one option</MenuItem>
-                        <MenuItem value={'Admin'}>Agency Only</MenuItem>
-                        <MenuItem value={'Normal'}>Agency + Client</MenuItem>
-                    </Select>
+                    <FormControlLabel
+                        control={<Switch checked={client} onChange={(e) => setClient(e.target.checked)} color='primary'/>}
+                        label="Aviable to Client in App"
+                    />
                 </FormControl>
 
                 <Button

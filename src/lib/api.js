@@ -367,3 +367,11 @@ export const applicationCreatePdf = async (info) => {
 
   return data;
 }
+
+export const documentUpload = async (form) => {
+  let endpoint = `documentUpload.php`;
+
+  let data = HTTP.POSTFORM(endpoint, form);
+
+  return data;
+}

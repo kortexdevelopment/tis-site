@@ -36,24 +36,19 @@ export const POST = async (endpoint, postData) => {
   return json;
 }
 
-//Create file upload api call
+export const POSTFORM = async (endpoint, formData) => {
+  let url = `${API_URL}${endpoint}`;
 
-// exports.DELETE = async (endpoint, postData) => {
-//   let url = `${API_URL}${endpoint}`;
+  const response = await fetch(url, {
+    method: 'POST',
+    body: formData
+  });
 
-//   const response = await fetch(url, {
-//     method: 'DELETE',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify(postData)
-//   });
+  if (!response.ok) {
+    throw new Error(`HTTP_NOT_OK, ${url}, ${await response.text()}`);
+  }
 
-//   if (!response.ok) {
-//     throw new Error(`HTTP_NOT_OK, ${url}, ${JSON.stringify(postData)}, ${await response.text()}`);
-//   }
+  let json = response.json();
 
-//   let json = response.json();
-
-//   return json;
-// }
+  return json;
+}
