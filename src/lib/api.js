@@ -160,6 +160,16 @@ export const applicationTemplates = async(aid, vid) => {
   return data;
 }
 
+export const documentList = async(id) => {
+  let endpoint = `documentList.php`;
+
+  let urlParams = `?cid=${id}`
+
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+
+  return data;
+}
+
 ///////////////////////////////////POST///////////////////////////////////
 
 export const agencyNewAgent = async (cid, name, pass, mail, level) => {
@@ -370,6 +380,14 @@ export const applicationCreatePdf = async (info) => {
 
 export const documentUpload = async (form) => {
   let endpoint = `documentUpload.php`;
+
+  let data = HTTP.POSTFORM(endpoint, form);
+
+  return data;
+}
+
+export const documentDelete = async (form) => {
+  let endpoint = `documentDelete.php`;
 
   let data = HTTP.POSTFORM(endpoint, form);
 

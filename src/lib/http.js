@@ -1,4 +1,5 @@
 const developmentServer = 'https://truckinsurancesolutions.org/system/functions/api/';
+const fileServer = 'https://truckinsurancesolutions.org/system/ready_files/';
 const API_URL = developmentServer;
 
 export const GET = async (endpoint) => {
