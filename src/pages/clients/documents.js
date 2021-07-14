@@ -111,12 +111,17 @@ export default function ClientDocs(props) {
 
     const uploadFile = async() =>
     {
+        if(![name, file].every(Boolean)){
+            alert('All parameters are required. Please, verify information');
+            return;
+        }
+
         var data = new FormData();
 
         data.append('file', file);
         data.append('cid', props.cid);
         data.append('name', name);
-        data.append('type', client);
+        data.append('type', client === true ? 1 : 0);
 
         onUpload(true);
 
@@ -383,14 +388,14 @@ export default function ClientDocs(props) {
                             marginBottom: 8,
                             marginLeft: '25%',
                             marginRight: '25%',
-                            backgroundColor: '#EE0000',
+                            backgroundColor: file === '' ? '#EE0000' : '#43E900',
                             color: '#FFFFFF',
                             width: '50%',
                             fontWeight: 'bold',
                         }}
                         component="span"
                     >
-                        Select File
+                        {file === '' ? 'SELECT FILE' : 'FILE SELECTED'}
                     </Button>
                 </label>
 

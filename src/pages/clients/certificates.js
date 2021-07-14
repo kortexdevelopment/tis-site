@@ -231,7 +231,7 @@ export default function ClientCertificate(props) {
         }
 
         if(rFile === undefined){
-            alert('Ups... Somethin went wrong while creating the certificate. Please, try again');
+            alert('Ups... Somethin went wrong while creating the certificate PDF. Please, try again');
             doAction(true);
             return;
         }

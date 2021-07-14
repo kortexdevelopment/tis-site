@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Box, Typography } from '@material-ui/core';
+import PDFViwerRoot from './PDFViwerRoot';
 
 export function AppViwer(props) {
 
@@ -27,7 +28,6 @@ export function AppViwer(props) {
                     flexDirection: 'column',
                     width:'100%',
                     alignItems: 'center',
-                    marginTop: 15,
                 }}
             >
                 <Box
@@ -38,7 +38,6 @@ export function AppViwer(props) {
                     }}
                 >
                      <Typography 
-                        variant='h6'
                         style={{
                             color:"#3973E5",
                             flex: 1,
@@ -92,14 +91,20 @@ export function AppViwer(props) {
                 </Box>
 
                 <Box
+                    style={{
+                        width:'100%',
+                        height:750
+                    }}
                 >
-                    <iframe
+                    {/* <iframe
                         width="750"
                         height="750"
                         src={props.files[file]}
                         name='file'
                     >
-                    </iframe>
+                    </iframe> */}
+
+                    <PDFViwerRoot file={props.files[file]} />
                 </Box>
             </Box>
         </>

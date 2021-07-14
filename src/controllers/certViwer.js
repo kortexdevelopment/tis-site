@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box } from '@material-ui/core';
 
+import PDFViwerRoot from './PDFViwerRoot';
 export function CertViwer(props) {
 
     return (
@@ -15,16 +16,11 @@ export function CertViwer(props) {
             >
                 <Box
                     style={{
-                        width:'99%',
+                        width:"99%",
+                        height:750,
                     }}
                 >
-                    <iframe
-                        width="100%"
-                        height="750"
-                        src={props.file}
-                        name='file'
-                    >
-                    </iframe>
+                    <PDFViwerRoot file={props.file}/>
                 </Box>
             </Box>
         </>
