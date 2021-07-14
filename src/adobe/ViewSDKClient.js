@@ -28,10 +28,10 @@ class ViewSDKClient {
         return this.readyPromise;
     }
 
-    previewFile(divId, viewerConfig, file, name = 'PDF File') {
+    previewFile(divId, viewerConfig, file, local) {
         const config = {
             /* Pass your registered client id */
-            clientId: "8c0cd670273d451cbc9b351b11d22318",
+            clientId: local === true ? '8c0cd670273d451cbc9b351b11d22318' : 'ce1b256ee73d40b6ac6186ff685aa6c7',
         };
         if (divId) { /* Optional only for Light Box embed mode */
             /* Pass the div id in which PDF should be rendered */
@@ -39,6 +39,7 @@ class ViewSDKClient {
         }
         /* Initialize the AdobeDC View object */
         this.adobeDCView = new window.AdobeDC.View(config);
+        console.log(config);
 
         /* Invoke the file preview API on Adobe DC View object */
         const previewFilePromise = this.adobeDCView.previewFile({
@@ -61,7 +62,7 @@ class ViewSDKClient {
             /* Pass meta data of file */
             metaData: {
                 /* file name */
-                fileName: name,
+                fileName: 'PDF File',
                 /* file ID */
                 id: "6d07d124-ac85-43b3-a867-36930f502ac6",
             }
@@ -74,7 +75,8 @@ class ViewSDKClient {
         /* Initialize the AdobeDC View object */
         this.adobeDCView = new window.AdobeDC.View({
             /* Pass your registered client id */
-            clientId: "8c0cd670273d451cbc9b351b11d22318",
+            // clientId: "8c0cd670273d451cbc9b351b11d22318",
+            clientId: "ce1b256ee73d40b6ac6186ff685aa6c7",
             /* Pass the div id in which PDF should be rendered */
             divId,
         });

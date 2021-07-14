@@ -22,7 +22,8 @@ export default function PDFViwerRoot(props) {
                 /* Control the viewer customization. */
                 showAnnotationTools: false,
             },
-            props.file);
+            props.file,
+            false);
             /* Register Save API handler */
             viewSDKClient.registerSaveApiHandler();
             })
