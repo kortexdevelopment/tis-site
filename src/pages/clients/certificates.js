@@ -17,11 +17,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 import PrintIcon from '@material-ui/icons/Print';
+import MailIcon from '@material-ui/icons/Mail';
 
 import Modal from '@material-ui/core/Modal';
 
 import { Companies, NewCompany, RemoveCompany,
-        Certificates, NewCertificate, NewCertificatePdf } from '../../controllers/certificates';
+        Certificates, NewCertificate, NewCertificatePdf,
+        SendMail } from '../../controllers/certificates';
 
 import { CertViwer } from '../../controllers/certViwer';
 
@@ -74,6 +76,11 @@ export default function ClientCertificate(props) {
     const [viwer, showViwer] = React.useState(false);
     const [file, setFileUrl] = React.useState('');
 
+    const [isMail, doMail] = React.useState(false);
+    const [isSend, doSend] = React.useState(false);
+    const [mailId, setMailId] = React.useState(-1);
+    const [mailTo, setMailTo] = React.useState('');
+
     const handleTabs = (event, newValue) =>{
         setNav(newValue);
     }
@@ -112,6 +119,16 @@ export default function ClientCertificate(props) {
 
         setFileUrl('');
     }, [viwer])
+
+    React.useEffect(() => {
+        if(isMail){
+            return;
+        }
+
+        setMailTo('');
+        setMailId(-1);
+        doSend(false);
+    },[isMail]);
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
@@ -292,6 +309,30 @@ export default function ClientCertificate(props) {
 
         setCompanies(c);
         setHistory(crt);
+    }
+
+    const handleMail = async(id) =>{
+        setMailId(id);
+        doMail(true);
+    }
+
+    const handleMailSend = async() =>{
+        doSend(true);
+
+        try{
+            var result = await SendMail(mailId, mailTo);
+        }
+        catch(e){
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Ups... Something went wrong while sending the e-mail. Please, try again.');
+            return;
+        }
+
+        alert('Mail sended successfully!');
+        doMail(false);
     }
 
     return (
@@ -504,6 +545,21 @@ export default function ClientCertificate(props) {
                                                 >
                                                     <PrintIcon />
                                                 </IconButton>
+
+                                                <IconButton
+                                                    disabled={!isAction}
+                                                    aria-label="MAIL" 
+                                                    component="span"
+                                                    style={{
+                                                        color: isAction ? '#FFFFFF' : '#999999',
+                                                        backgroundColor: '#3973E5',
+                                                        marginRight: 12
+                                                    }}
+                                                    onClick={() => handleMail(params.value)}
+                                                >
+                                                    <MailIcon />
+                                                </IconButton>
+
                                             </Box>
                                         </>
                                     ),
@@ -720,6 +776,9 @@ export default function ClientCertificate(props) {
                     >
                         Generate Certificate
                     </Button>
+
+                    
+
                 </Box>
 
                 <Box
@@ -755,6 +814,21 @@ export default function ClientCertificate(props) {
                     >
                         Visualize PDF
                     </Button>
+
+                    <Button
+                        disabled={work}
+                        style={{
+                            marginTop: 8,
+                            marginBottom: 8,
+                            backgroundColor: '#3973E5',
+                            color: '#FFFFFF',
+                            width: '100%',
+                        }}
+                        onClick={() => handleMail(fileId)}
+                    >
+                        Mail Certificate to Address
+                    </Button>
+
                 </Box>
 
             </Box>
@@ -795,6 +869,89 @@ export default function ClientCertificate(props) {
             </Box>
 
         </Modal>
+
+        {/* Mail Modal */}
+        <Modal
+            open={isMail}
+            onClose={() => doMail(false)}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
+        >
+            
+            <Box
+                style={{
+                    position: 'absolute',
+                    top: '10%',
+                    left: '40%',
+                    width: '40%',
+                    backgroundColor: '#FFFFFF',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <AppBar position="static">
+                    <Toolbar 
+                        variant="dense"
+                        style={{
+                            backgroundColor:'#3973E5'
+                        }}
+                    >
+                        <Typography variant="h6" color="inherit">
+                            CERTIFICATE MAILING
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+
+                <Box
+                    style={{
+                        margin:8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}
+                >
+                    <Typography 
+                        style={{
+                            color:"#3973E5",
+                            flex: 1,
+                        }}
+                    >
+                        RECEIVER E-MAIL
+                    </Typography>
+
+                    <Divider />
+                </Box>
+
+                <TextField 
+                    style={{
+                        marginTop: 8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}
+                    label="e-Mail"
+                    variant="filled" 
+                    value={mailTo}
+                    onChange={(e) => setMailTo(e.target.value)}
+                />
+
+                <Button
+                    disabled={isSend}
+                    style={{
+                        marginTop: 8,
+                        marginBottom: 8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                        backgroundColor: '#3973E5',
+                        color: '#FFFFFF'
+                    }}
+
+                    onClick={handleMailSend}
+                >
+                    Send Mail
+                </Button>
+
+            </Box>
+            
+        </Modal>  
 
     </>
 );

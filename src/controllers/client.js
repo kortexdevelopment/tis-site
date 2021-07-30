@@ -1,4 +1,5 @@
 import * as API from '../lib/api';
+import * as Formats from '../lib/formaters';
 
 export const Profile = async(cid) => {
     try{
@@ -61,8 +62,8 @@ export const Profile = async(cid) => {
         cbDesc: extra[6],
         cbAverage: extra[18],
         cbMax: extra[20],
-        dateFrom: extra[10],
-        dateTo: extra[11],
+        dateFrom: Formats.QuickDate(extra[10]),
+        dateTo: Formats.QuickDate(extra[11]),
         numPolicy: extra[12],
         typePolicy: extra[13],
         losNum: extra[14],
@@ -266,8 +267,8 @@ export const Vehicles = async(cid) =>{
             gvw: raw[a][4],
             vin: raw[a][5],
             model: raw[a][6],
-            value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits:2 }).format(Number(raw[a][7])),
-            deductible: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 2, maximumFractionDigits:2 }).format(Number(raw[a][8])),
+            value: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits:0 }).format(Number(raw[a][7])),
+            deductible: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits:0 }).format(Number(raw[a][8])),
         }
 
         vehicles.push(vehicle);
@@ -333,8 +334,8 @@ export const Policies = async(cid) =>{
             id: raw[a][0],
             company: raw[a][2],
             number: raw[a][3],
-            from: raw[a][4],
-            to: raw[a][5],
+            from: Formats.QuickDate(raw[a][4]),
+            to: Formats.QuickDate(raw[a][5]),
             covers: cover,
             niac: raw[a][8],
         }
@@ -410,6 +411,7 @@ export const Coverages = async(cid) =>{
             update: true,
             vLiability: raw[0][2],
             dLiability: raw[0][3],
+            // vCargo: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits:0 }).format(Number(raw[0][4])),
             vCargo: raw[0][4],
             dCargo: raw[0][5],
             vGeneral: raw[0][6],

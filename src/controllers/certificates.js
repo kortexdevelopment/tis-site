@@ -127,3 +127,19 @@ export const NewCertificatePdf = async(id) =>{
 
     return result;
 }
+
+export const SendMail = async(id, to) =>{
+    try{
+        var result = await API.sendCertMail(id, to);
+    }
+    catch(e){
+        console.error(`Controller Error : CERTIFICATES.SEND MAIL\n${e}`);
+        result = undefined;
+    }
+
+    if(result === undefined){
+        return undefined;
+    }
+
+    return true;
+}

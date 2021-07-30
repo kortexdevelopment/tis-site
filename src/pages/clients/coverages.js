@@ -51,6 +51,8 @@ export default function ClientCoverage(props) {
     const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
     const [coverages, setCoverages] = React.useState(undefined);
+    const [vCargo, setCargo] = React.useState('');
+    const [vGeneral, setGeneral] = React.useState('');
 
     const [edit, canEdit] = React.useState(false);
 
@@ -146,6 +148,10 @@ export default function ClientCoverage(props) {
 
     const handleChanges = async(e) =>{
         setCoverages({...coverages, [e.target.name]: e.target.value})
+    }
+
+    const filterChanges = async(e) =>{
+
     }
 
     const consoleDebug = async() => {
@@ -358,15 +364,27 @@ export default function ClientCoverage(props) {
                 >
                     <FormControl fullWidth className={classes.textSingned}>
                         <InputLabel htmlFor="value">Value</InputLabel>
-                        <Input
-                            disabled={!edit}
-                            id="value"
-                            type='number'
-                            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                            name='vCargo'
-                            value={coverages === undefined ? -1 : coverages.vCargo}
-                            onChange={handleChanges}
-                        />
+                        {edit && (
+                            <Input
+                                id="value"
+                                type='number'
+                                startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                name='vCargo'
+                                value={coverages === undefined ? -1 : coverages.vCargo}
+                                onChange={handleChanges}
+                            />
+                        )}
+                        
+                        {!edit && (
+                            <Input
+                                disabled={true}
+                                id="value"
+                                startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                name='vCargo'
+                                value={coverages === undefined ? -1 : 
+                                        new Intl.NumberFormat('en-US', { style: 'decimal', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits:0 }).format(Number(coverages.vCargo))}
+                            />
+                        )}
                     </FormControl>
 
                     <FormControl className={classes.selectControl}>
@@ -425,15 +443,27 @@ export default function ClientCoverage(props) {
                 >
                     <FormControl fullWidth className={classes.textSingned}>
                         <InputLabel htmlFor="value">Value</InputLabel>
-                        <Input
-                            disabled={!edit}
-                            id="value"
-                            type='number'
-                            startAdornment={<InputAdornment position="start">$</InputAdornment>}
-                            name='vGeneral'
-                            value={coverages === undefined ? -1 : coverages.vGeneral}
-                            onChange={handleChanges}
-                        />
+                        {edit && (
+                            <Input
+                                id="value"
+                                type='number'
+                                startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                name='vGeneral'
+                                value={coverages === undefined ? -1 : coverages.vGeneral}
+                                onChange={handleChanges}
+                            />
+                        )}
+                        
+                        {!edit && (
+                            <Input
+                                disabled={true}
+                                id="value"
+                                startAdornment={<InputAdornment position="start">$</InputAdornment>}
+                                name='vGeneral'
+                                value={coverages === undefined ? -1 : 
+                                        new Intl.NumberFormat('en-US', { style: 'decimal', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits:0 }).format(Number(coverages.vGeneral))}
+                            />
+                        )}
                     </FormControl>
 
                     <FormControl className={classes.selectControl}>
