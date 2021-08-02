@@ -118,7 +118,6 @@ export default function ClientCertificate(props) {
         }
 
         setFileUrl('');
-        setMailId(-1);
     }, [viwer])
 
     React.useEffect(() => {
@@ -314,6 +313,10 @@ export default function ClientCertificate(props) {
     }
 
     const handleMail = async(id) =>{
+        if(viwer){
+            showViwer(false);
+        }
+
         setMailId(id);
         doMail(true);
     }
@@ -879,7 +882,9 @@ export default function ClientCertificate(props) {
                                         borderRadius: 45,
                                         borderWidth: 2,
                                         borderColor: '#FFFFFF',
-                                        color: '#FFFFFF'
+                                        color: '#FFFFFF',
+                                        marginTop: 8,
+                                        marginBottom: 8,
                                     }}
                                     onClick={() => handleMail(mailId)}
                                 >
