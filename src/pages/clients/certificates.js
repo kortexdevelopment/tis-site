@@ -118,6 +118,7 @@ export default function ClientCertificate(props) {
         }
 
         setFileUrl('');
+        setMailId(-1);
     }, [viwer])
 
     React.useEffect(() => {
@@ -260,6 +261,7 @@ export default function ClientCertificate(props) {
 
     const handleFile = async(id) => {
         var url = `https://www.truckinsurancesolutions.org/system/ready_files/certs/cert${id}.pdf`;
+        setMailId(id);
         setFileUrl(url);
         showViwer(true);
     }
@@ -862,6 +864,28 @@ export default function ClientCertificate(props) {
                             <Typography variant="h6" color="inherit">
                                 CERTIFICATE VIWER
                             </Typography>
+
+                            <Box
+                                style={{
+                                    display: 'inline-flex',
+                                    justifyContent: 'flex-end',
+                                    flex:1,
+                                }}
+                            >
+                                <Button
+                                    variant='outlined'
+                                    style={{
+                                        backgroundColor: '#3973E5',
+                                        borderRadius: 45,
+                                        borderWidth: 2,
+                                        borderColor: '#FFFFFF',
+                                        color: '#FFFFFF'
+                                    }}
+                                    onClick={() => handleMail(mailId)}
+                                >
+                                    e-Mail File <MailIcon style={{marginLeft:4}}/>
+                                </Button>
+                            </Box>
                         </Toolbar>
                 </AppBar>
 
