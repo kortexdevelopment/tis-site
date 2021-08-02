@@ -226,6 +226,12 @@ export default function ClientCertificate(props) {
     }
 
     const handleCertificateDirect = async(id) => {
+        var doIt = await window.confirm('Do you want to create a New Certificate for the selected Company?');
+
+        if(!doIt){
+            return;
+        }
+
         doAction(false);
         try{
             var result = await NewCertificate(id);
@@ -266,6 +272,12 @@ export default function ClientCertificate(props) {
     }
 
     const handleRemove = async(id) => {
+        var doIt = await window.confirm('The selected Company will be deleted. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
         doAction(false);
 
         var data ={

@@ -107,6 +107,11 @@ export default function AgencyUsers() {
     }
 
     const handleRemove = async(id) =>{
+        var doIt = await window.confirm("The selected Agent will be deleted. \nDo you want to proceed?");
+
+        if(!doIt){
+            return;
+        }
 
         setDeleting(id);
 

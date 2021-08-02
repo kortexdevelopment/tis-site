@@ -138,6 +138,12 @@ export default function ClientApp(props) {
     }
 
     const removeCredential = async(uid) => {
+        var doIt = await window.confirm('The selected App credentials will be deleted. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+        
         setDel(uid);
 
         try{

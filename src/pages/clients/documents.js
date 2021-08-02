@@ -141,6 +141,12 @@ export default function ClientDocs(props) {
     }
 
     const handleDelete = async(id) => {
+        var doIt = await window.confirm('The selected Document will be deleted from the cloud. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
         var doc = documents.find(x => x.id === id);
 
         var data = new FormData();

@@ -216,6 +216,12 @@ export default function ClientPolicies(props) {
     }
 
     const removePolicy = async(id) => {
+        var doIt = await window.confirm('The selected Policy will be deleted. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
         var policy = {
             id: id,
         }

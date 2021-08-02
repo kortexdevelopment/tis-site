@@ -153,6 +153,12 @@ export default function ClientVehicles(props) {
     }
 
     const removeVehicle = async(vid) =>{
+        var doIt = await window.confirm('The selected Vehicle will be deleted. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
         var vehicle = {
             id:vid
         }

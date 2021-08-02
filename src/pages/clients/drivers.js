@@ -159,6 +159,12 @@ export default function ClientDrivers(props) {
     }
 
     const removeDriver = async(id) =>{
+        var doIt = await window.confirm('The selected Driver will be deleted. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
         setDel(id);
 
         var driverData = {
