@@ -301,17 +301,17 @@ export default function ClientVehicles(props) {
             <div style={{ height: 500, width: '100%' }}>
                 <DataGrid 
                     style={{
-                        backgroundColor:'#FF0000'
+                        backgroundColor:'#FF0000',
                     }}
                     columns={[
                         {field: 'make', headerName: 'MAKE', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'year', headerName: 'YEAR', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'gvw', headerName: 'G.V.W.', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'year', headerName: 'YEAR', headerClassName: classes.gridHeader, flex: .5},
+                        {field: 'gvw', headerName: 'G.V.W.', headerClassName: classes.gridHeader, flex: .5},
                         {field: 'vin', headerName: 'VIN', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'model', headerName: 'MODEL', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'value', headerName: 'VALUE', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'deductible', headerName: 'DEDUCTIBLE', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false, 
+                        {field: 'model', headerName: 'MODEL', headerClassName: classes.gridHeader, flex: .5},
+                        {field: 'value', headerName: 'VALUE', headerClassName: classes.gridHeader, flex: .8},
+                        {field: 'deductible', headerName: 'DEDUCTIBLE', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .5, sortable: false, 
                             valueGetter: idGetter,
                             renderCell: (params) =>(
                                 <>

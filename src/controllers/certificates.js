@@ -128,9 +128,9 @@ export const NewCertificatePdf = async(id) =>{
     return result;
 }
 
-export const SendMail = async(id, to) =>{
+export const SendMail = async(id, to, reply) =>{
     try{
-        var result = await API.sendCertMail(id, to);
+        var result = await API.sendCertMail(id, to, reply);
     }
     catch(e){
         console.error(`Controller Error : CERTIFICATES.SEND MAIL\n${e}`);

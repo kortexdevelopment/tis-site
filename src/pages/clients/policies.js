@@ -414,8 +414,8 @@ export default function ClientPolicies(props) {
                     }}
                     columns={[
                         {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
-                        {field: 'company', headerName: 'COMPANY', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'naic', headerName: 'NIAC', headerClassName: classes.gridHeader, flex: .75},
+                        {field: 'company', headerName: 'COMPANY', headerClassName: classes.gridHeader, flex: 1.7},
+                        {field: 'naic', headerName: 'NIAC', headerClassName: classes.gridHeader, flex: .75, hide: true},
                         {field: 'number', headerName: 'P. NUMBER', headerClassName: classes.gridHeader, flex: .75},
                         {field: 'from', headerName: 'START', headerClassName: classes.gridHeader, flex: .7},
                         {field: 'to', headerName: 'END', headerClassName: classes.gridHeader, flex: .7},

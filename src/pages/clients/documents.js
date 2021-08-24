@@ -236,7 +236,7 @@ export default function ClientDocs(props) {
                             color:'#3973E5'
                         }}
                     >
-                        {!loadError ? 'Loading Drivers information...':'Someting whent wrong, try again later...'}
+                        {!loadError ? 'Loading Cloud information...':'Someting whent wrong, try again later...'}
                     </Typography>
                 </Box>
             </>

@@ -62,8 +62,8 @@ export const Profile = async(cid) => {
         cbDesc: extra[6],
         cbAverage: extra[18],
         cbMax: extra[20],
-        dateFrom: Formats.QuickDate(extra[10]),
-        dateTo: Formats.QuickDate(extra[11]),
+        dateFrom: extra[10] != null ? Formats.QuickDate(extra[10]) : extra[10],
+        dateTo: extra[11] != null ? Formats.QuickDate(extra[11]) : extra[11],
         numPolicy: extra[12],
         typePolicy: extra[13],
         losNum: extra[14],
@@ -199,8 +199,8 @@ export const Drivers = async(cid) =>{
             name: raw[a][2],
             licence: raw[a][3],
             state: raw[a][4],
-            dob: raw[a][5], //?Ajustar formato de fecha desde creacion / Hacer un formato de visualizacion independiente
-            doh: raw[a][6],
+            dob: Formats.QuickDate(raw[a][5]), //?Ajustar formato de fecha desde creacion / Hacer un formato de visualizacion independiente
+            doh: Formats.QuickDate(raw[a][6]),
             exp: raw[a][7],
         }
 
@@ -411,7 +411,6 @@ export const Coverages = async(cid) =>{
             update: true,
             vLiability: raw[0][2],
             dLiability: raw[0][3],
-            // vCargo: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits:0 }).format(Number(raw[0][4])),
             vCargo: raw[0][4],
             dCargo: raw[0][5],
             vGeneral: raw[0][6],

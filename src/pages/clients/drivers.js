@@ -311,13 +311,13 @@ export default function ClientDrivers(props) {
                     }}
                     columns={[
                         {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
-                        {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'exp', headerName: 'EXP.', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1.3},
+                        {field: 'exp', headerName: 'EXP.', headerClassName: classes.gridHeader, flex: .7},
                         {field: 'licence', headerName: 'LICENSE', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'state', headerName: 'STATE', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'dob', headerName: 'D.O.B.', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'doh', headerName: 'D.O.H.', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false, 
+                        {field: 'state', headerName: 'STATE', headerClassName: classes.gridHeader, flex: .5},
+                        {field: 'dob', headerName: 'D.O.B.', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'doh', headerName: 'D.O.H.', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .7, sortable: false, 
                             valueGetter: idGetter,
                             renderCell: (params) =>(
                                 <>

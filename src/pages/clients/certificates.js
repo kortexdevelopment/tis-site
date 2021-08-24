@@ -335,9 +335,15 @@ export default function ClientCertificate(props) {
 
     const handleMailSend = async() =>{
         doSend(true);
+        const clientProfile = JSON.parse(window.localStorage.getItem('clientProfile'));
+
+        if(clientProfile.mail === undefined){
+            alert('Client profile requires atention, can\' proceed.');
+            return;
+        }
 
         try{
-            var result = await SendMail(mailId, mailTo);
+            var result = await SendMail(mailId, mailTo, clientProfile.mail);
         }
         catch(e){
             result = undefined;
@@ -538,8 +544,8 @@ export default function ClientCertificate(props) {
                             columns={[
                                 {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
                                 {field: 'holder', headerName: 'HOLDER/COMPANY NAME', headerClassName: classes.gridHeader, flex: 1},
-                                {field: 'date', headerName: 'DATE OF CREATION', headerClassName: classes.gridHeader, flex: 1},
-                                {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false, 
+                                {field: 'date', headerName: 'DATE OF CREATION', headerClassName: classes.gridHeader, flex: .3},
+                                {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .2, sortable: false, 
                                     valueGetter: idGetter,
                                     renderCell: (params) =>(
                                         <>

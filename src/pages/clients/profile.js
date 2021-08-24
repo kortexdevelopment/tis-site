@@ -87,6 +87,8 @@ export default function ClientProfile(props) {
             return;
         }
 
+        window.localStorage.setItem('clientProfile', JSON.stringify(result));
+        //const session = JSON.parse(window.localStorage.getItem('session'));
         setProfile(result);
         isLoad(false);
     }
