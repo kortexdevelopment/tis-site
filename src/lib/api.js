@@ -170,10 +170,10 @@ export const documentList = async(id) => {
   return data;
 }
 
-export const sendCertMail = async(id, to, reply) => {
+export const sendCertMail = async(id, to) => {
   let endpoint = `sendCertMail.php`;
 
-  let urlParams = `?to=${to}&pid=${id}&reply${reply}`
+  let urlParams = `?to=${to}&pid=${id}`
 
   let data = HTTP.GET(`${endpoint}${urlParams}`);
 

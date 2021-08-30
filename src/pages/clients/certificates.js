@@ -335,15 +335,9 @@ export default function ClientCertificate(props) {
 
     const handleMailSend = async() =>{
         doSend(true);
-        const clientProfile = JSON.parse(window.localStorage.getItem('clientProfile'));
-
-        if(clientProfile.mail === undefined){
-            alert('Client profile requires atention, can\' proceed.');
-            return;
-        }
 
         try{
-            var result = await SendMail(mailId, mailTo, clientProfile.mail);
+            var result = await SendMail(mailId, mailTo);
         }
         catch(e){
             result = undefined;
