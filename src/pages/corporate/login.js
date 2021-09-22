@@ -44,7 +44,7 @@ export function Login() {
             result = undefined;
         }
 
-        if(result === undefined || result.error){
+        if(result === undefined || result.user === null){
             alert('Invalid credentials. Please verify information');
             DoWait(false);
             return;
