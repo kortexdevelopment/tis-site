@@ -12,14 +12,14 @@ import { AppBar,
 
 import { useHistory } from "react-router-dom";
 
-import logo from '../media/logo.png';
-// 3973E5 primary
+import logo from '../../media/logo.png';
+// 3D3D3D primary
 // A5C0F3 secondary
 // FF0000 red
 
-import * as API from '../lib/api';
+import * as API from '../../controllers/corporate';
 
-export default function Login() {
+export function Login() {
 
     let history = useHistory();
 
@@ -39,37 +39,22 @@ export default function Login() {
         }
         
         try{
-            var LoginResult = await verifyLogin();
-        }
-        catch(e){
-            LoginResult = undefined;
+            var result = await API.Login(user, pass);
+        }catch(e){
+            result = undefined;
         }
 
-        if(LoginResult === undefined || LoginResult.error){
+        if(result === undefined || result.error){
             alert('Invalid credentials. Please verify information');
             DoWait(false);
             return;
         }
 
-        console.log(LoginResult);
-        window.localStorage.setItem('session', JSON.stringify(LoginResult));
+        DoWait(false);
+        window.localStorage.setItem('crpUser', JSON.stringify(result.user));
 
         clearInputs();
-        history.push("/main");
-    }
-
-    const verifyLogin = async() => {
-        try{
-            var result = await API.agencyLogin(user, pass);
-        }catch(e){
-            result = undefined;
-        }
-
-        if(result === undefined){
-            return undefined;
-        }
-
-        return result;
+        history.push("/corporate/main");
     }
 
     const clearInputs = async() =>{
@@ -79,7 +64,7 @@ export default function Login() {
     }
 
     const handleCorporate = async() => {
-        history.push("/corporate");
+        history.push("/");
     }
 
     return (
@@ -88,7 +73,7 @@ export default function Login() {
             <Toolbar 
                 variant="dense"
                 style={{
-                    backgroundColor:'#3973E5',
+                    backgroundColor:'#3D3D3D',
                     display:'flex',
                     justifyContent: 'flex-end',
                 }}
@@ -99,14 +84,14 @@ export default function Login() {
                         marginLeft:8,
                         marginRight:8,
                         backgroundColor:'#FFFFFF',
-                        color:'#3973E5',
+                        color:'#3D3D3D',
                         fontWeight: 'bold',
                         borderRadius: 16
                     }}
                     variant="contained"
                     onClick={handleCorporate}
                 >
-                    CORPORATE ACCESS
+                    AGENCY ACCESS
                 </Button>
             </Toolbar>
         </AppBar>
@@ -127,7 +112,7 @@ export default function Login() {
                 <img 
                     style={{height: 175,
                             width: 360,
-                            backgroundColor: '#3973E5',}}
+                            backgroundColor: '#3D3D3D',}}
                     src={logo} 
                     alt="TIS Logo" 
                 />
@@ -179,7 +164,7 @@ export default function Login() {
                             marginLeft:8,
                             marginRight:8,
                             marginBottom:16,
-                            backgroundColor:'#3973E5',
+                            backgroundColor:'#3D3D3D',
                         }}
                         variant="contained"
                         fullWidth

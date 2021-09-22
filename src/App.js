@@ -7,6 +7,8 @@ import {
 
 import Login from './pages/login';
 import Main from './pages/main';
+import {Main as CorpoMain} from './pages/corporate/main';
+import {Login as CorpoLog} from './pages/corporate/login';
 
 export default function App() {
   return (
@@ -14,6 +16,12 @@ export default function App() {
       <Switch>
         <Route exact path="/main">
           <Main />
+        </Route>
+        <Route exact path="/corporate">
+          <CorpoLog />
+        </Route>
+        <Route exact path="/corporate/main">
+          <CorpoMain />
         </Route>
         <Route path="/">
           <Login />
