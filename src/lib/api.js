@@ -403,3 +403,53 @@ export const documentDelete = async (form) => {
 
   return data;
 }
+
+export const clientUpdateVehicle = async (info) => {
+  let endpoint = `clientUpdateVehicle.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientUpdateDriver = async (info) => {
+  let endpoint = `clientUpdateDriver.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientUpdatePolicy = async (info) => {
+  let endpoint = `clientUpdatePolicy.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const clientAppUserUpdate = async (info) => {
+  let endpoint = `clientAppUserUpdate.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}
+
+export const agencyAgentUpdate = async (info) => {
+  let endpoint = `agencyAgentUpdate.php`;
+
+  const postData = info
+  
+  let data = HTTP.POST(endpoint, postData);
+
+  return data;
+}

@@ -26,6 +26,7 @@ import { Companies, NewCompany, RemoveCompany,
         SendMail } from '../../controllers/certificates';
 
 import { CertViwer } from '../../controllers/certViwer';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,6 +61,7 @@ export default function ClientCertificate(props) {
     const [isNew, doNew] = React.useState(false);
     const [isAction, doAction] = React.useState(true); //Enables and disbles action buttons on the list
     const [companies, setCompanies] = React.useState([]);
+    const [orgCompanies, setOrgCompanies] = React.useState([]);
 
     const [work, inWork] = React.useState(false);
     const [lastId, setLast] = React.useState(-1);
@@ -72,6 +74,7 @@ export default function ClientCertificate(props) {
     const [zip, newZip] = React.useState('');
 
     const [history, setHistory] = React.useState([]);
+    const [orgHistory, setOrgHistory] = React.useState([]);
 
     const [viwer, showViwer] = React.useState(false);
     const [file, setFileUrl] = React.useState('');
@@ -153,8 +156,10 @@ export default function ClientCertificate(props) {
             didError(true);
         }
 
-        setCompanies(c);
+        setCompanies(c);    
+        setOrgCompanies(c);
         setHistory(crt);
+        setOrgHistory(crt);
 
         isLoad(false);
     }
@@ -321,7 +326,9 @@ export default function ClientCertificate(props) {
         }
 
         setCompanies(c);
+        setOrgCompanies(c);
         setHistory(crt);
+        setOrgHistory(crt);
     }
 
     const handleMail = async(id) =>{
@@ -444,6 +451,8 @@ export default function ClientCertificate(props) {
                             justifyContent: 'flex-end',
                         }}
                     >
+                        <Searcher onUpdate={setCompanies} original={orgCompanies} fields={['name', 'licence', 'state']} color='#3973E5'/>
+
                         <IconButton
                             aria-label="NEW" 
                             style={{
@@ -527,9 +536,19 @@ export default function ClientCertificate(props) {
                 <Container
                     style={{
                         visibility: loadInfo === true ? 'hidden' : 'visible',
-                        marginTop: 60,
                     }}
                 >
+                    <Box
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                            marginBottom: 12,
+                        }}
+                    >
+                        <Searcher onUpdate={setHistory} original={orgHistory} fields={['holder', 'date']} color='#3973E5'/>
+
+                    </Box>
+
                     <div style={{ height: 500, width: '100%' }}>
                         <DataGrid 
                             style={{

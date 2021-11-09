@@ -22,6 +22,7 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import { Upload, List, Delete, Download } from '../../controllers/documents';
 import { saveAs } from 'file-saver';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -70,6 +71,7 @@ export default function ClientDocs(props) {
     const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
     const [documents, setDocuments] = React.useState([]);
+    const [original, setOriginal] = React.useState([]);
 
     React.useEffect(() => {
         if(!loadInfo){
@@ -106,6 +108,7 @@ export default function ClientDocs(props) {
         }
 
         setDocuments(result);
+        setOriginal(result);
         isLoading(false);
     }
 
@@ -184,6 +187,7 @@ export default function ClientDocs(props) {
         }
 
         setDocuments(result);
+        setOriginal(result);
     }
 
     const handleDownload = async(id) => {
@@ -271,6 +275,8 @@ export default function ClientDocs(props) {
                     justifyContent: 'flex-end',
                 }}
             >
+                <Searcher onUpdate={setDocuments} original={original} fields={['name']} color='#3973E5'/>
+
                 <IconButton
                     aria-label="NEW" 
                     style={{

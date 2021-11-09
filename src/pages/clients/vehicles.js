@@ -21,7 +21,9 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import { Vehicles, NewVehicle, RemoveVehicle } from '../../controllers/client';
+import { Vehicles, NewVehicle, RemoveVehicle } from '../../controllers/vehicles';
+import VehicleEdit from './edits/vehicles';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,6 +66,7 @@ export default function ClientVehicles(props) {
     const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
     const [vehicles, setVehicles] = React.useState([]);
+    const [original, setOriginal] = React.useState([]);
 
     const [newUser, doNew] = React.useState(false);
     const [newMake, setMake] = React.useState('');
@@ -73,6 +76,9 @@ export default function ClientVehicles(props) {
     const [newModel, setModel] = React.useState(0);
     const [newValue, setValue] = React.useState('');
     const [newDeductible, setDeductible] = React.useState(0);
+
+    const [edit, showEdit] = React.useState(false);
+    const [editVehicle, setEditVehicle] = React.useState(undefined);
 
     React.useEffect(() => {
         if(!loadInfo){
@@ -88,6 +94,10 @@ export default function ClientVehicles(props) {
             clearInput();
         }
     }, [newUser]);
+
+    React.useEffect(() => {
+        showEdit(editVehicle !== undefined);
+    },[editVehicle]);
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
@@ -107,6 +117,7 @@ export default function ClientVehicles(props) {
         }
 
         setVehicles(result);
+        setOriginal(result);
         isLoading(false);
     }
 
@@ -193,6 +204,7 @@ export default function ClientVehicles(props) {
         }
 
         setVehicles(result);
+        setOriginal(result);
     }
 
     const clearInput = async() => {
@@ -205,6 +217,26 @@ export default function ClientVehicles(props) {
         setValue('');
         setDeductible(0);
         doNew(false);
+    }
+
+    const handleEditSelect = async(id) =>{
+        var result = vehicles.find(x => x.id === id);
+        setEditVehicle(result);
+    }
+
+    const handleEditCancel = async() => {
+        var doIt = await window.confirm('The progress will be lost. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
+        setEditVehicle(undefined);
+    }
+
+    const handleEditSuccess = async() => {
+        setEditVehicle(undefined);
+        handleRefresh();
     }
 
   return (
@@ -285,6 +317,8 @@ export default function ClientVehicles(props) {
                     justifyContent: 'flex-end',
                 }}
             >
+                <Searcher onUpdate={setVehicles} original={original} fields={['make', 'year', 'vin', 'gvw', 'model']} color='#3973E5'/>
+
                 <IconButton
                     aria-label="NEW" 
                     style={{
@@ -309,9 +343,9 @@ export default function ClientVehicles(props) {
                         {field: 'gvw', headerName: 'G.V.W.', headerClassName: classes.gridHeader, flex: .5},
                         {field: 'vin', headerName: 'VIN', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'model', headerName: 'MODEL', headerClassName: classes.gridHeader, flex: .5},
-                        {field: 'value', headerName: 'VALUE', headerClassName: classes.gridHeader, flex: .8},
-                        {field: 'deductible', headerName: 'DEDUCTIBLE', headerClassName: classes.gridHeader, flex: .7},
-                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .5, sortable: false, 
+                        {field: 'valueLabel', headerName: 'VALUE', headerClassName: classes.gridHeader, flex: .8},
+                        {field: 'deductibleLabel', headerName: 'DEDUCTIBLE', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .55, sortable: false, 
                             valueGetter: idGetter,
                             renderCell: (params) =>(
                                 <>
@@ -335,7 +369,7 @@ export default function ClientVehicles(props) {
                                             <DeleteForeverRoundedIcon />
                                         </IconButton>
 
-                                        {/* <IconButton
+                                        <IconButton
                                             aria-label="EDIT" 
                                             component="span"
                                             style={{
@@ -343,9 +377,10 @@ export default function ClientVehicles(props) {
                                                 backgroundColor: '#3973E5',
                                                 marginRight: 12
                                             }}
+                                            onClick={() => handleEditSelect(params.value)}
                                         >
                                             <EditRoundedIcon />
-                                        </IconButton> */}
+                                        </IconButton>
                                     </Box>
                                 </>
                             ),
@@ -362,10 +397,10 @@ export default function ClientVehicles(props) {
         </Container>
 
         <Modal
-        open={newUser}
-        onClose={() => doNew(false)}
-        aria-labelledby="simple-modal-title"
-        aria-describedby="simple-modal-description"
+            open={newUser}
+            onClose={() => doNew(false)}
+            aria-labelledby="simple-modal-title"
+            aria-describedby="simple-modal-description"
         >
             
             <Box
@@ -518,6 +553,12 @@ export default function ClientVehicles(props) {
             
         </Modal>        
 
+        <Modal
+            open={edit}
+            onClose={handleEditCancel}
+        >
+            <VehicleEdit onCancel={handleEditCancel} onSuccess={handleEditSuccess} vehicle={editVehicle} />
+        </Modal>
     </>
   );
 }

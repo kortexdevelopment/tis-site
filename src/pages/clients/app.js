@@ -8,6 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import { DataGrid } from '@material-ui/data-grid';
 import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
+import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 import IconButton from '@material-ui/core/IconButton';
 import Modal from '@material-ui/core/Modal';
@@ -18,8 +19,9 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
-import { AppUsers, NewAppUser, RemoveAppUser } from '../../controllers/client';
-import { SettingsPhoneTwoTone } from '@material-ui/icons';
+import { AppUsers, NewAppUser, RemoveAppUser } from '../../controllers/app';
+import AppUserEdit from './edits/app';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -62,6 +64,7 @@ export default function ClientApp(props) {
 
     const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
+    const [original, setOriginal] = React.useState([]);
     const [appUsers, setUsers] = React.useState([]);
 
     const [newUser, doNew] = React.useState(false);
@@ -69,7 +72,10 @@ export default function ClientApp(props) {
     const [newPass, setPass] = React.useState('');
 
     const [delId, setDel] = React.useState(0);
-        
+    
+    const [edit, showEdit] = React.useState(false);
+    const [editUser, setEdit] = React.useState(undefined);
+
     //Add app user buslhit logic
     React.useEffect(() => {
         if(!loadInfo){
@@ -86,6 +92,10 @@ export default function ClientApp(props) {
         }
     }, [newUser]);
 
+    React.useEffect(() => {
+        showEdit(editUser !== undefined);
+    }, [editUser]);
+
     const handleLoading = async() => {
         try{
             var result = await AppUsers(props.cid);
@@ -100,6 +110,7 @@ export default function ClientApp(props) {
         }
 
         setUsers(result);
+        setOriginal(result);
         isLoading(false);
     }
 
@@ -185,6 +196,26 @@ export default function ClientApp(props) {
         setUsers(result);
     }
 
+    const handelEditSelect = async(id) => { 
+        var result = appUsers.find(x => x.id === id);
+        setEdit(result);
+    }
+
+    const handleEditCancel = async() => {
+        var doIt = await window.confirm('The progress will be lost. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
+        setEdit(undefined);
+    }
+
+    const handleEditSuccess = async() => {
+        handleRefresh();
+        setEdit(undefined);
+    }
+
   return (
     <>
         <div className={classes.root}>
@@ -263,6 +294,8 @@ export default function ClientApp(props) {
                     justifyContent: 'flex-end',
                 }}
             >
+                <Searcher onUpdate={setUsers} original={original} fields={['user']} color='#3973E5'/>
+
                 <IconButton
                     aria-label="NEW" 
                     style={{
@@ -283,7 +316,7 @@ export default function ClientApp(props) {
                     }}
                     columns={[
                         {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
-                        {field: 'user', headerName: 'ACCESS CREDENTIAL', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'userLabel', headerName: 'ACCESS CREDENTIAL', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'pass', headerName: 'ACCESS PASSWORD', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false, 
                             valueGetter: idGetter,
@@ -307,6 +340,18 @@ export default function ClientApp(props) {
                                             onClick={() => removeCredential(params.value)}
                                         >
                                             <DeleteForeverRoundedIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            aria-label="DELETE" 
+                                            component="span"
+                                            style={{
+                                                color:'#00FF00',
+                                                backgroundColor: '#3973E5',
+                                                marginRight: 12
+                                            }}
+                                            onClick={() => handelEditSelect(params.value)}
+                                        >
+                                            <EditRoundedIcon />
                                         </IconButton>
                                     </Box>
                                 </>
@@ -399,6 +444,14 @@ export default function ClientApp(props) {
             </Box>
             
         </Modal>        
+
+        <Modal
+            open={edit}
+            onClose={handleEditCancel}
+        >
+            <AppUserEdit onCancel={handleEditCancel} onSuccess={handleEditSuccess} user={editUser} />
+
+        </Modal>
 
     </>
   );

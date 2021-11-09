@@ -81,3 +81,59 @@ export const UpdateCompany = async(company) =>{
 
     return result;
 }
+
+export const Users = async() =>{
+    try{
+        var result = await API.Users();
+    }catch(e){
+        return [];
+    }
+
+    var raw = result.users;
+    var users = [];
+
+    for(var i = 0; i < raw.length; i++){
+        var user = {
+            id: Number(raw[i][0]),
+            name: raw[i][1],
+            email: raw[i][2],
+            pass: raw[i][3],
+            role: raw[i][4],
+            roleLabel: raw[i][4].toUpperCase(),
+        }
+
+        users.push(user);
+    }
+
+    return users;
+}
+
+export const UserCreate = async(data) => {
+    try{
+        var result = await API.UserCreate(data);
+    }catch(e){
+        return undefined;
+    }
+
+    return result;
+}
+
+export const UserRemove = async(data) => {
+    try{
+        var result = await API.UserRemove(data);
+    }catch(e){
+        return undefined;
+    }
+
+    return result;
+}
+
+export const UserUpdate = async(data) => {
+    try{
+        var result = await API.UserUpdate(data);
+    }catch(e){
+        return undefined;
+    }
+
+    return result;
+}

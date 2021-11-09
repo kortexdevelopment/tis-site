@@ -21,7 +21,9 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 
-import {Agents, NewAgent, RemoveAgent} from '../../controllers/agency';
+import {Agents, NewAgent, RemoveAgent} from '../../controllers/agencyUsers';
+import UsersEdit from './edits/users';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -65,6 +67,7 @@ export default function AgencyUsers() {
     const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
     const [users, setUsers] = React.useState([]);
+    const [original, setOriginal] = React.useState([]);
 
     const [newUser, doNew] = React.useState(false);
     const [newName, setName] = React.useState('');
@@ -73,6 +76,9 @@ export default function AgencyUsers() {
     const [newLevel, setLevel] = React.useState('');
 
     const [deletingId, setDeleting] = React.useState('');
+
+    const [edit, showEdit] = React.useState(false);
+    const [editUser, setEdit] = React.useState(undefined);
 
     React.useEffect(() => {
         if(!loadInfo){
@@ -88,6 +94,10 @@ export default function AgencyUsers() {
             clearForm();
         }
     }, [newUser]);
+    
+    React.useEffect(() => {
+        showEdit(editUser !== undefined);
+    }, [editUser]);
 
     const handleLoading = async() =>{
         try{
@@ -102,6 +112,7 @@ export default function AgencyUsers() {
             return;
         }
 
+        setOriginal(results);
         setUsers(results);
         isLoading(false);
     }
@@ -185,10 +196,36 @@ export default function AgencyUsers() {
         }
 
         setUsers(results);
+        setOriginal(results);
     }
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
+    }
+
+    const handleEditSelect = async(id) => {
+        if(session.userTp !== 2){
+            alert('Only Admins can edit agents');
+            return;
+        }
+
+        var result = users.find(x => x.id === id);
+        setEdit(result);
+    }
+
+    const handleEditCancel = async() => {
+        var doIt = await window.confirm("The progress will be lost. \nDo you want to proceed?");
+
+        if(!doIt){
+            return;
+        }
+
+        setEdit(undefined);
+    }
+
+    const handleEditSuccess = async() => {
+        handleRefresh();
+        setEdit(undefined);
     }
 
   return (
@@ -269,6 +306,8 @@ export default function AgencyUsers() {
                     justifyContent: 'flex-end',
                 }}
             >
+                <Searcher onUpdate={setUsers} original={original} fields={['name', 'mail']} color='#3973E5'/>
+
                 <IconButton
                     aria-label="NEW" 
                     style={{
@@ -292,7 +331,7 @@ export default function AgencyUsers() {
                         {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'mail', headerName: 'ACCESS E-MAIL', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'pass', headerName: 'ACCESS PASS', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'level', headerName: 'ACCESS LEVEL', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'levelLabel', headerName: 'ACCESS LEVEL', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false,
                             valueGetter: idGetter,
                             renderCell: (params) =>(
@@ -328,7 +367,7 @@ export default function AgencyUsers() {
                                             }}
                                         />
 
-                                        {/* <IconButton
+                                        <IconButton
                                             aria-label="EDIT" 
                                             component="span"
                                             style={{
@@ -336,9 +375,10 @@ export default function AgencyUsers() {
                                                 backgroundColor: '#3973E5',
                                                 marginRight: 12
                                             }}
+                                            onClick={() => handleEditSelect(params.value)}
                                         >
                                             <EditRoundedIcon />
-                                        </IconButton> */}
+                                        </IconButton>
 
                                     </Box>
                                 </>
@@ -457,7 +497,14 @@ export default function AgencyUsers() {
                 </Button>
             </Box>
             
-        </Modal>        
+        </Modal>  
+
+        <Modal
+            open={edit}
+            onClose={handleEditCancel}
+        >
+            <UsersEdit onCancel={handleEditCancel} onSuccess={handleEditSuccess} user={editUser} />
+        </Modal>      
 
     </>
   );

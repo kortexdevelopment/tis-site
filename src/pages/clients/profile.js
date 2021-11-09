@@ -49,6 +49,8 @@ export default function ClientProfile(props) {
     const [loadError, didError] = React.useState(false);
 
     const [profile, setProfile] = React.useState(undefined);
+    const [delta, setDelta] = React.useState(undefined);
+    const [changes, hasChanges] = React.useState(false);
 
     const handleTabs = (event, newValue) =>{
         setNav(newValue);
@@ -74,6 +76,22 @@ export default function ClientProfile(props) {
         isMissing(![addReady, filReady, extReady].every(Boolean));
     },[profile]);
 
+    React.useEffect(() => {
+        if(profile === undefined || delta === undefined){
+            return;
+        }
+
+        hasChanges(delta !== profile);
+    });
+
+    React.useEffect(() => {
+        if(!changes){
+            return;
+        }
+
+        handleEditChanges();
+    },[edit]);
+
     const handleLoad = async() =>{
         try{
             var result = await Profile(props.cid);
@@ -90,6 +108,7 @@ export default function ClientProfile(props) {
         window.localStorage.setItem('clientProfile', JSON.stringify(result));
         //const session = JSON.parse(window.localStorage.getItem('session'));
         setProfile(result);
+        setDelta(result);
         isLoad(false);
     }
     
@@ -120,11 +139,15 @@ export default function ClientProfile(props) {
         onEdit(false);
     }
 
-    const debugConsole = async() =>{
-        console.log(profile);
-        console.log(profile.readyAddress());
-        console.log(profile.readyFiling());
-        console.log(profile.readyAditional());
+    const handleEditChanges = async() => {
+        var doIt = await window.confirm('The information has changes. \nDo you want to save the changes?');
+
+        if(!doIt){
+            setProfile(delta);
+            return;
+        }
+
+        handleUpdate();
     }
 
     return (

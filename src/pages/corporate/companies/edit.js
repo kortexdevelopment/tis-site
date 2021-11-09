@@ -10,7 +10,7 @@ import Box from '@material-ui/core/Box';
 import { Button } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
 
-import * as API from '../../../controllers/corporate';
+import * as Controller from '../../../controllers/corporate';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,16 +51,20 @@ const useStyles = makeStyles((theme) => ({
 // A5C0F3 secondary
 // FF0000 red
 
-export default function Create(props) {
+export default function EditCompany(props) {
     const styles = useStyles();
 
+    const [boot, didBoot] = React.useState(false);
     const [company, setCompany] = React.useState({
+        id: 0,
         name: '',
+        company: '',
         producer: '',
         lic_number: '',
         acces_finish: '',
         phone: '',
-        email: '',
+        phoneNumber: '',
+        emailAddress: '',
         phone_fax: '',
         address: '',
         city: '',
@@ -70,17 +74,20 @@ export default function Create(props) {
         status: 1,
     })
 
-    const [delta, setDelta] = React.useState('');
-
     React.useEffect(() => {
-        setDelta(company);
-    }, [company]);
+        if(boot){
+            return;
+        }
+
+        didBoot(true);
+        setCompany(props.company);
+    });
 
     const handleChange = async(e) =>{
         setCompany({...company, [e.target.name] : e.target.value});
     }
 
-    const handleCreate = async() =>{
+    const handleConfirm = async() =>{
         for(const key in company){
             if(![company[key]].every(Boolean)){
                 alert('All parameters are required. \nPlease verify your information');
@@ -88,35 +95,40 @@ export default function Create(props) {
             }
         }
 
-        var doIt = await window.confirm('The company will be created. \nDo you want to proceed?');
+        var doIt = await window.confirm('The information will be updated. \nDo you want to proceed?');
 
         if(!doIt){
             return;
         }
-
-        company.phone = `${company.phone}:${company.email}`;
-        company.name = `${company.producer}:${company.name}`;
+        var copy = company;
+        copy.name = `${copy.producer}:${copy.company}`;
+        copy.phone = `${copy.phoneNumber}:${copy.emailAddress}`;
 
         var data = new FormData();
-        for(const key in company){
+        for(const key in copy){
             data.append(`${key}`, company[key]);
         }
 
+        handleProcess(data);
+    }
+
+    const handleProcess = async(data) =>{
         try{
-            var result = await API.CreateCompany(data);
+            var result = await Controller.UpdateCompany(data);
         }catch(e){
-            console.log(e);
-            alert('Error while creating new company. \nPlease, try again');
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Error while updating information. Please, try again');
             return;
         }
 
-        if(!result.success){
-            alert('Error while creating new COMPANY. \nPlease, try again');
-            setCompany(delta);
-            return;
-        }
+        alert(result.msg);
 
-        props.onSuccess();
+        if(result.success){
+            props.onSuccess();
+        }
     }
 
   return (
@@ -137,7 +149,7 @@ export default function Create(props) {
 
                 <CardContent>
                     <Typography variant="h6" color="inherit">
-                        NEW COMPANY
+                        EDIT COMPANY
                     </Typography>
                     
                     <Divider />
@@ -153,8 +165,8 @@ export default function Create(props) {
                             }}
                             label="Company Name"
                             variant="filled" 
-                            name='name'
-                            value={company.name}
+                            name='company'
+                            value={company.company}
                             onChange={handleChange}
                         />
 
@@ -219,8 +231,8 @@ export default function Create(props) {
                                 }}
                                 label="Phone"
                                 variant="filled" 
-                                name='phone'
-                                value={company.phone}
+                                name='phoneNumber'
+                                value={company.phoneNumber}
                                 onChange={handleChange}
                             />
 
@@ -242,8 +254,8 @@ export default function Create(props) {
                                 }}
                                 label="E-mail"
                                 variant="filled"
-                                name='email'
-                                value={company.email}
+                                name='emailAddress'
+                                value={company.emailAddress}
                                 onChange={handleChange}
                             />
                         </Box>
@@ -344,9 +356,9 @@ export default function Create(props) {
                             color: '#FFFFFF'
                         }}
                         fullWidth
-                        onClick={handleCreate}
+                        onClick={handleConfirm}
                     >
-                        CREATE
+                        UPDATE
                     </Button>
                 </CardActions>
             </Card>

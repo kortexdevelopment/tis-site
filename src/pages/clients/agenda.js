@@ -21,6 +21,7 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 
 import {Agenda, NewClient} from '../../controllers/agency';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,6 +59,7 @@ export default function ClientAgenda(props) {
     const session = JSON.parse(window.localStorage.getItem('session')); //compId userTp
 
     const [agenda, setAgenda] = React.useState([]);
+    const [original, setOriginal] = React.useState([]);
     const [loadAgenda, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
 
@@ -101,6 +103,7 @@ export default function ClientAgenda(props) {
         }
 
         setAgenda(results);
+        setOriginal(results);
         isLoading(false);
     }
 
@@ -230,6 +233,8 @@ export default function ClientAgenda(props) {
                     justifyContent: 'flex-end',
                 }}
             >
+                <Searcher onUpdate={setAgenda} original={original} fields={['nameF', 'nameL', 'bsn']} color='#3973E5'/>
+
                 <IconButton
                     aria-label="NEW" 
                     style={{

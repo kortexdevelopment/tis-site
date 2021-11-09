@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useDebugValue } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -8,6 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import { DataGrid } from '@material-ui/data-grid';
 import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
+import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 import IconButton from '@material-ui/core/IconButton';
 import Modal from '@material-ui/core/Modal';
@@ -19,7 +20,9 @@ import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import { Policies, NewPolicy, RemovePolicy } from '../../controllers/client';
+import { Policies, NewPolicy, RemovePolicy } from '../../controllers/policies';
+import PoliciesEdit from './edits/policies';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -64,6 +67,7 @@ export default function ClientPolicies(props) {
     const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
     const [policies, setPolicies] = React.useState([]);
+    const [original, setOriginal] = React.useState([]);
 
     const [newName, setName] = React.useState('');
     const [newNaic, setNaic] = React.useState('');
@@ -92,6 +96,9 @@ export default function ClientPolicies(props) {
 
     const {liability, cargo, general, damage, interchange, non, unisured} = covers;
 
+    const [edit, showEdit] = React.useState(false);
+    const [editPolicy, setEdit] = React.useState(undefined);
+
     React.useEffect(() => {
         if(!loadInfo){
             return;
@@ -110,6 +117,10 @@ export default function ClientPolicies(props) {
     React.useEffect(() =>{
         handleAviable();
     }, [policies]);
+
+    React.useEffect(() => {
+        showEdit(editPolicy !== undefined);
+    }, [editPolicy]);
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
@@ -133,6 +144,7 @@ export default function ClientPolicies(props) {
         }
 
         setPolicies(result);
+        setOriginal(result);
         isLoading(false);
     }
 
@@ -256,6 +268,7 @@ export default function ClientPolicies(props) {
         }
 
         setPolicies(result);
+        setOriginal(result);
     }
 
     const clearInput = async() => {
@@ -314,6 +327,26 @@ export default function ClientPolicies(props) {
         }
 
         setAviable(isAviable);
+    }
+
+    const handleEditSelect = async(id) => {
+        var result = policies.find(x => x.id === id);
+        setEdit(result);
+    }
+
+    const handleEditCancel = async() => {
+        var doIt = await window.confirm('The progress will be lost. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
+        setEdit(undefined);
+    }
+
+    const handleEditSuccess = async() => {
+        handleRefresh();
+        setEdit(undefined);
     }
 
   return (
@@ -394,6 +427,8 @@ export default function ClientPolicies(props) {
                     justifyContent: 'flex-end',
                 }}
             >
+                <Searcher onUpdate={setPolicies} original={original} fields={['company', 'number', 'covers']} color='#3973E5'/>
+
                 <IconButton
                     aria-label="NEW" 
                     style={{
@@ -417,8 +452,8 @@ export default function ClientPolicies(props) {
                         {field: 'company', headerName: 'COMPANY', headerClassName: classes.gridHeader, flex: 1.7},
                         {field: 'naic', headerName: 'NIAC', headerClassName: classes.gridHeader, flex: .75, hide: true},
                         {field: 'number', headerName: 'P. NUMBER', headerClassName: classes.gridHeader, flex: .75},
-                        {field: 'from', headerName: 'START', headerClassName: classes.gridHeader, flex: .7},
-                        {field: 'to', headerName: 'END', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'fromLabel', headerName: 'START', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'toLabel', headerName: 'END', headerClassName: classes.gridHeader, flex: .7},
                         {field: 'covers', headerName: 'COVERAGE', headerClassName: classes.gridHeader, flex: 2},
                         {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .75, sortable: false, 
                             valueGetter: idGetter,
@@ -442,6 +477,18 @@ export default function ClientPolicies(props) {
                                             onClick={()=> removePolicy(params.value)}
                                         >
                                             <DeleteForeverRoundedIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            aria-label="EDIT" 
+                                            component="span"
+                                            style={{
+                                                color:'#73E600',
+                                                backgroundColor: '#3973E5',
+                                                marginRight: 12
+                                            }}
+                                            onClick={() => handleEditSelect(params.value)}
+                                        >
+                                            <EditRoundedIcon />
                                         </IconButton>
                                     </Box>
                                 </>
@@ -709,6 +756,13 @@ export default function ClientPolicies(props) {
             </Box>
             
         </Modal>        
+
+        <Modal
+            open={edit}
+            onClose={handleEditCancel}
+        >
+            <PoliciesEdit onCancel={handleEditCancel} onSuccess={handleEditSuccess} policy={editPolicy} aviable={aviable} />
+        </Modal>
 
     </>
   );

@@ -16,6 +16,7 @@ import logo from '../../media/logo.png';
 import Info from './info';
 
 import {Main as Companies} from './companies/main';
+import {Main as Users} from './users/main';
 
 // 3973E5 primary
 // 9E9E9E secondary
@@ -145,6 +146,7 @@ export function Main() {
                                     className={classes.Text}
                                     fullWidth
                                     variant='contained'
+                                    onClick={() => setComponent(<Users />)}
                                 >
                                     Users
                                 </Button>

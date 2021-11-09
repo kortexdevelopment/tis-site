@@ -8,6 +8,7 @@ import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import { DataGrid } from '@material-ui/data-grid';
 import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
+import EditRoundedIcon from '@material-ui/icons/EditRounded';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 import IconButton from '@material-ui/core/IconButton';
 import Modal from '@material-ui/core/Modal';
@@ -26,7 +27,9 @@ import {
 } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 
-import { Drivers, NewDriver, RemoveDriver } from '../../controllers/client';
+import { Drivers, NewDriver, RemoveDriver } from '../../controllers/drivers';
+import DriverEdit from './edits/drivers';
+import Searcher from '../../components/search';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -72,6 +75,7 @@ export default function ClientDrivers(props) {
     const [loadInfo, isLoading] = React.useState(true);
     const [loadError, didError] = React.useState(false);
     const [drivers, setDrivers] = React.useState([]);
+    const [original, setOriginal] = React.useState([]);
 
     const [newName, setNam] = React.useState('');
     const [newExp, setExp] = React.useState('');
@@ -82,6 +86,9 @@ export default function ClientDrivers(props) {
 
     const [test, setTest] = React.useState(new Date());
     const [delId, setDel] = React.useState(0);
+
+    const [edit, showEdit] = React.useState(false);
+    const [editDriver, setEdit] = React.useState(undefined);
 
     React.useEffect(() => {
         if(!loadInfo){
@@ -97,6 +104,10 @@ export default function ClientDrivers(props) {
             clearInput();
         }
     }, [newUser]);
+
+    React.useEffect(() => {
+        showEdit(editDriver !== undefined);
+    },[editDriver]);
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
@@ -116,6 +127,7 @@ export default function ClientDrivers(props) {
         }
 
         setDrivers(result);
+        setOriginal(result);
         isLoading(false);
     }
 
@@ -201,6 +213,7 @@ export default function ClientDrivers(props) {
         }
 
         setDrivers(result);
+        setOriginal(result);
     }
 
     const clearInput = async() =>{
@@ -211,6 +224,26 @@ export default function ClientDrivers(props) {
         setDoh('');
         setDob('');
         setSta(0);
+    }
+
+    const handleEditSelect = async(id) => {
+        var result = drivers.find(x => x.id === id);
+        setEdit(result);
+    }
+
+    const handleEditCancel = async() => {
+        var doIt = await window.confirm('The progress will be lost. \nDo you want to proceed?');
+
+        if(!doIt){
+            return;
+        }
+
+        setEdit(undefined);
+    }
+
+    const handleEditSuccess = async() => {
+        handleRefresh();
+        setEdit(undefined);
     }
 
   return (
@@ -291,6 +324,8 @@ export default function ClientDrivers(props) {
                     justifyContent: 'flex-end',
                 }}
             >
+                <Searcher onUpdate={setDrivers} original={original} fields={['name', 'licence', 'state']} color='#3973E5'/>
+
                 <IconButton
                     aria-label="NEW" 
                     style={{
@@ -315,8 +350,8 @@ export default function ClientDrivers(props) {
                         {field: 'exp', headerName: 'EXP.', headerClassName: classes.gridHeader, flex: .7},
                         {field: 'licence', headerName: 'LICENSE', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'state', headerName: 'STATE', headerClassName: classes.gridHeader, flex: .5},
-                        {field: 'dob', headerName: 'D.O.B.', headerClassName: classes.gridHeader, flex: .7},
-                        {field: 'doh', headerName: 'D.O.H.', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'dobLabel', headerName: 'D.O.B.', headerClassName: classes.gridHeader, flex: .7},
+                        {field: 'dohLabel', headerName: 'D.O.H.', headerClassName: classes.gridHeader, flex: .7},
                         {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .7, sortable: false, 
                             valueGetter: idGetter,
                             renderCell: (params) =>(
@@ -339,6 +374,18 @@ export default function ClientDrivers(props) {
                                             onClick={() => removeDriver(params.value)}
                                         >
                                             <DeleteForeverRoundedIcon />
+                                        </IconButton>
+                                        <IconButton
+                                            aria-label="EDIT" 
+                                            component="span"
+                                            style={{
+                                                color:'#73E600',
+                                                backgroundColor: '#3973E5',
+                                                marginRight: 12
+                                            }}
+                                            onClick={() => handleEditSelect(params.value)}
+                                        >
+                                            <EditRoundedIcon />
                                         </IconButton>
                                     </Box>
                                 </>
@@ -444,27 +491,6 @@ export default function ClientDrivers(props) {
                     </Select>
                 </FormControl>
 
-                {/* <MuiPickersUtilsProvider utils={DateFnsUtils}> //Se ocupa integrar bien para lectura y escritura
-                    <KeyboardDatePicker
-                        disableToolbar
-                        variant="filled"
-                        style={{
-                            marginTop: 8,
-                            marginLeft: 15,
-                            marginRight: 15,
-                        }}
-                        format="MM/dd/yyyy"
-                        margin="normal"
-                        id="date-picker-inline"
-                        label="Date picker inline"
-                        value={test}
-                        onChange={(e) => setTest(e)}
-                        KeyboardButtonProps={{
-                            'aria-label': 'change date',
-                        }}
-                    />
-                </MuiPickersUtilsProvider> */}
-
                 <TextField
                     style={{
                         marginTop: 8,
@@ -516,6 +542,13 @@ export default function ClientDrivers(props) {
             </Box>
             
         </Modal>        
+
+        <Modal
+            open={edit}
+            onClose={handleEditCancel}
+        >
+            <DriverEdit onCancel={handleEditCancel} onSuccess={handleEditSuccess} driver={editDriver} />
+        </Modal>
 
     </>
   );

@@ -8,18 +8,15 @@ import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
 import { DataGrid } from '@material-ui/data-grid';
 import EditRoundedIcon from '@material-ui/icons/EditRounded';
+import DeleteForeverRoundedIcon from '@material-ui/icons/DeleteForeverRounded';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 import IconButton from '@material-ui/core/IconButton';
 import Modal from '@material-ui/core/Modal';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { Edit } from '@material-ui/icons';
-import SyncIcon from '@material-ui/icons/Sync';
-import GroupIcon from '@material-ui/icons/Group';
 
 import * as API from '../../../controllers/corporate';
 import Create from './create';
-import Users from './users';
-import EditCompany from './edit';
+import Edit from './edit';
 import Searcher from '../../../components/search';
 
 const useStyles = makeStyles((theme) => ({
@@ -59,32 +56,31 @@ const useStyles = makeStyles((theme) => ({
 
 export function Main(props) {
     const classes = useStyles();
+    const session = JSON.parse(window.localStorage.getItem('crpUser'));
+
+    const [boot, didBoot] = React.useState(false);
+    const [loadInfo, isLoading] = React.useState(true);
+    const [loadError, didError] = React.useState(false);
+    const [users, setUsers] = React.useState([]);
+    const [original, setOriginal] = React.useState([]);
 
     const [work, doWork] = React.useState(false);
     const [create, doCreate] = React.useState(false);
-    const [usersModal, showUsers] = React.useState(false);
-
-    const [loadInfo, isLoading] = React.useState(true);
-    const [loadError, didError] = React.useState(false);
-    const [companies, setCompanies] = React.useState([]);
-    const [original, setOriginal] = React.useState([]);
-
-    const [usersCompany, setCompany] = React.useState('');
 
     const [edit, showEdit] = React.useState(false);
-    const [editCompany, setEdit] = React.useState(undefined);
+    const [editUser, setEdit] = React.useState(undefined);
 
     React.useEffect(() => {
-        if(!loadInfo){
+        if(boot){
             return;
         }
-
+        didBoot(true);
         handleLoading();
     });
 
     React.useEffect(() => {
-        showEdit(editCompany !== undefined);
-    }, [editCompany]);
+        showEdit(editUser !== undefined);
+    }, [editUser]);
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
@@ -92,7 +88,7 @@ export function Main(props) {
 
     const handleLoading = async() =>{
         try{
-            var result = await API.Companies();
+            var result = await API.Users();
         }
         catch(e){
             result = undefined;
@@ -103,7 +99,7 @@ export function Main(props) {
             return;
         }
 
-        setCompanies(result);
+        setUsers(result);
         setOriginal(result);
         isLoading(false);
     }
@@ -119,63 +115,44 @@ export function Main(props) {
     }
 
     const handleCreationSuccess = async() =>{
-        alert('Company created successfully');
         handleLoading();
         doCreate(false);
     }
 
-    const handleStatus = async(id) =>{
-        var company = companies.find(e => e.id === id);
-        var msg = company.status < 1 ? 'It will be set to Active and will have access to the system' : 'It will be set to Inactive and will not have access to the system';
+    const handleRemove = async(id) => {
+        if(Number(session[0]) === id){
+            alert('Operation invalid \nCan not deleted your own user');
+            return;
+        }
 
-        var doIt = await window.confirm('Do you want to change the company status?\n' + msg);
+        var doIt = await window.confirm('The information will be lost. \nDo you want to proceed?');
 
         if(!doIt){
             return;
         }
 
-        company.status = company.status < 1 ? 1 : 0;
-
-        var data = new FormData();
-        for(const key in company){
-            data.append(`${key}`, company[key]);
-        }
-
-        doWork(true);
+        var user = users.find(x => x.id === id);
 
         try{
-            var result = await API.UpdateCompany(data);
+            var result = await API.UserRemove(user);
         }catch(e){
-            alert('Error while updating company\'s status. \nPlease, try again');
-            doWork(false);
-            console.log(e);
+            result = undefined;
+        }
+
+        if(result === undefined){
+            alert('Error while deleting user. Please, try again');
             return;
         }
 
-        if(!result.success)
-        {
-            alert('Error while UPDATING company\'s status. \nPlease, try again');
-            doWork(false);
-            return;
+        alert(result.msg);
+
+        if(result.success){
+            handleLoading();
         }
-
-        alert('Company status updated successfully');
-        handleLoading();
-    }
-
-    const handleUsers = async(id) =>{
-        var company = companies.find(e => e.id === id);
-        setCompany(company);
-        showUsers(true);
-    }
-
-    const handleUsersClose = async() =>{
-        setCompany('');
-        showUsers(false);
     }
 
     const handleEditSelect = async(id) => {
-        var result = companies.find(x => x.id === id);
+        var result = users.find(x => x.id === id);
         setEdit(result);
     }
 
@@ -204,7 +181,7 @@ export function Main(props) {
                     }}
                 >
                     <Typography variant="h6" color="inherit">
-                        COMPANIES
+                        USERS
                     </Typography>
                 </Toolbar>
             </AppBar>
@@ -258,7 +235,7 @@ export function Main(props) {
                         flex: 1,
                     }}
                 >
-                    REGISTERED COMPANIES
+                    REGISTERED USERS
                 </Typography>
 
             </Box>
@@ -271,8 +248,8 @@ export function Main(props) {
                     justifyContent: 'flex-end',
                 }}
             >
-                <Searcher onUpdate={setCompanies} original={original} fields={['producer', 'company']} color='#777777'/>
-
+                <Searcher onUpdate={setUsers} original={original} fields={['name', 'email']} color='#777777'/>
+            
                 <IconButton
                     aria-label="NEW" 
                     style={{
@@ -282,7 +259,7 @@ export function Main(props) {
 
                     onClick={() => doCreate(true)}
                 >
-                    New Company <AddCircleRoundedIcon fontSize='large'/>
+                    New User <AddCircleRoundedIcon fontSize='large'/>
                 </IconButton>
             </Box>
 
@@ -290,12 +267,10 @@ export function Main(props) {
                 <DataGrid 
                     columns={[
                         {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
-                        {field: 'company', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1.2},
-                        {field: 'producer', headerName: 'PRODUCER', headerClassName: classes.gridHeader, flex: 1.2},
-                        {field: 'lic_number', headerName: 'LICENCE', headerClassName: classes.gridHeader, flex: .8},
-                        {field: 'expiration', headerName: 'EXPIRATION', headerClassName: classes.gridHeader, flex: .7},
-                        {field: 'statusTx', headerName: 'STATUS', headerClassName: classes.gridHeader, flex: .5},
-                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .8, sortable: false, 
+                        {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1.2},
+                        {field: 'email', headerName: 'E-MAIL', headerClassName: classes.gridHeader, flex: 1.2},
+                        {field: 'roleLabel', headerName: 'ROLE', headerClassName: classes.gridHeader, flex: .8},
+                        {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: .8, sortable: false, hide: session[4] !== 'admin',
                             valueGetter: idGetter,
                             renderCell: (params) =>(
                                 <>
@@ -308,30 +283,16 @@ export function Main(props) {
                                     >
                                         <IconButton
                                             disabled={work}
-                                            aria-label="USERS" 
-                                            component="span"
-                                            style={{
-                                                color:'#00ff00',
-                                                backgroundColor: '#777777',
-                                                marginRight: 12
-                                            }}
-                                            onClick={() => handleUsers(params.value)}
-                                        >
-                                            <GroupIcon />
-                                        </IconButton>
-
-                                        <IconButton
-                                            disabled={work}
                                             aria-label="STATUS" 
                                             component="span"
                                             style={{
-                                                color:'#0000FF',
+                                                color:'#FF0000',
                                                 backgroundColor: '#777777',
                                                 marginRight: 12
                                             }}
-                                            onClick={() => handleStatus(params.value)}
+                                            onClick={() => handleRemove(params.value)}
                                         >
-                                            <SyncIcon />
+                                            <DeleteForeverRoundedIcon />
                                         </IconButton>
 
                                         <IconButton
@@ -353,7 +314,7 @@ export function Main(props) {
                             }
                         ]} 
 
-                    rows={companies} 
+                    rows={users} 
 
                     pageSize={7}
                     disableColumnMenu={true}
@@ -371,28 +332,18 @@ export function Main(props) {
                 <Create onCancel={handleCreationClose} onSuccess={handleCreationSuccess}/>
             </Box>
             
-        </Modal>        
-        
+        </Modal>    
+
         <Modal
             open={edit}
             onClose={handleEditCancel}
         >
-            <Box>
-                <EditCompany onCancel={handleEditCancel} onSuccess={handleEditSuccess} company={editCompany}/>
-            </Box>
-            
-        </Modal>        
-
-        <Modal
-            open={usersModal}
-            onClose={handleUsersClose}
-        >
             
             <Box>
-                <Users onClose={handleUsersClose} company={usersCompany}/>
+                <Edit onCancel={handleEditCancel} onSuccess={handleEditSuccess} user={editUser}/>
             </Box>
             
-        </Modal>   
+        </Modal>      
 
     </>
   );
