@@ -170,10 +170,10 @@ export const documentList = async(id) => {
   return data;
 }
 
-export const sendCertMail = async(id, to) => {
+export const sendCertMail = async(id, to, cc) => {
   let endpoint = `sendCertMail.php`;
 
-  let urlParams = `?to=${to}&pid=${id}`
+  let urlParams = `?to=${to}&cc=${cc}&pid=${id}`
 
   let data = HTTP.GET(`${endpoint}${urlParams}`);
 
@@ -338,10 +338,10 @@ export const clientRemoveCompany = async (info) => {
   return data;
 }
 
-export const clientNewCertificate = async(id) => { 
+export const clientNewCertificate = async(id, note) => { 
   let endpoint = `clientNewCertificate.php`;
 
-  let urlParams = `?cid=${id}`
+  let urlParams = `?cid=${id}&note=${note}`
 
   let data = HTTP.GET(`${endpoint}${urlParams}`);
 

@@ -27,6 +27,7 @@ import { Companies, NewCompany, RemoveCompany,
 
 import { CertViwer } from '../../controllers/certViwer';
 import Searcher from '../../components/search';
+import CertNote from '../../components/certNote';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -82,7 +83,14 @@ export default function ClientCertificate(props) {
     const [isMail, doMail] = React.useState(false);
     const [isSend, doSend] = React.useState(false);
     const [mailId, setMailId] = React.useState(-1);
-    const [mailTo, setMailTo] = React.useState('');
+    const [mailTo, setMailTo] = React.useState({
+        main: '',
+        cc: ''
+    });
+
+    const [directId, setDirect] = React.useState(0);
+    const [noteModal, showNote] = React.useState(false);
+    const [note, setNote] = React.useState('');
 
     const handleTabs = (event, newValue) =>{
         setNav(newValue);
@@ -128,10 +136,14 @@ export default function ClientCertificate(props) {
             return;
         }
 
-        setMailTo('');
+        setMailTo({main:'', cc: ''});
         setMailId(-1);
         doSend(false);
     },[isMail]);
+
+    React.useEffect(() => {
+        showNote(directId !== 0);
+    }, [directId]);
 
     const idGetter = (params) =>{
         return params.getValue(params.id, 'id');
@@ -195,11 +207,16 @@ export default function ClientCertificate(props) {
         inWork(false);
     }
 
+    const handleNewClose = async() => {
+        doNew(false);
+        setNote('');
+    }
+
     const handleCertificate = async() => {
         inWork(true);
 
         try{
-            var result = await NewCertificate(lastId);
+            var result = await NewCertificate(lastId, note);
         }
         catch(e){
             result = undefined;
@@ -225,17 +242,33 @@ export default function ClientCertificate(props) {
         }
 
         setFile(result.lid);
+        setNote('');
         setLast(-1);
 
         inWork(false);
     }
 
-    const handleCertificateDirect = async(id) => {
-        var doIt = await window.confirm('Do you want to create a New Certificate for the selected Company?');
+    const handleNoteCreation = async(id) => {
+        setDirect(id);
+    }
+
+    const handleNoteCancel = async() => {
+        var doIt = await window.confirm('The Certificate will not be created. Do you want to proceed?');
 
         if(!doIt){
             return;
         }
+
+        handleNoteClearance();
+    }
+
+    const handleNoteClearance = async() => {
+        setNote('');
+        setDirect(0);
+    }
+
+    const handleCertificateDirect = async(id) => {
+        handleNoteClearance();
 
         doAction(false);
         try{
@@ -265,6 +298,7 @@ export default function ClientCertificate(props) {
         }
 
         doAction(true);
+        setNote('');
         handleFile(result.lid);
         handleRefresh();
     }
@@ -344,7 +378,7 @@ export default function ClientCertificate(props) {
         doSend(true);
 
         try{
-            var result = await SendMail(mailId, mailTo);
+            var result = await SendMail(mailId, mailTo.main, mailTo.cc);
         }
         catch(e){
             result = undefined;
@@ -498,7 +532,7 @@ export default function ClientCertificate(props) {
                                                         backgroundColor: '#3973E5',
                                                         marginRight: 12
                                                     }}
-                                                    onClick={() => handleCertificateDirect(params.value)}
+                                                    onClick={() => handleNoteCreation(params.value)}
                                                 >
                                                     <DescriptionIcon />
                                                 </IconButton>
@@ -616,7 +650,7 @@ export default function ClientCertificate(props) {
         {/* New Modal */}
         <Modal
             open={isNew}
-            onClose={() => doNew(false)}
+            onClose={handleNewClose}
             aria-labelledby="simple-modal-title"
             aria-describedby="simple-modal-description"
         >
@@ -797,7 +831,20 @@ export default function ClientCertificate(props) {
                         COMPANY REGISTERED SUCCESSFULLY
                     </Typography>
 
-                    <Divider />
+                    <Divider 
+                        style={{
+                            marginBottom: 8
+                        }}
+                    />
+                    
+                    <TextField 
+                        label='Optional Note'
+                        variant='outlined'
+                        fullWidth
+                        multiline
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                    />
 
                     <Button
                         disabled={work}
@@ -987,10 +1034,22 @@ export default function ClientCertificate(props) {
                         marginLeft: 15,
                         marginRight: 15,
                     }}
-                    label="e-Mail"
+                    label="E-Mail"
                     variant="filled" 
-                    value={mailTo}
-                    onChange={(e) => setMailTo(e.target.value)}
+                    value={mailTo.main}
+                    onChange={(e) => setMailTo({...mailTo,main: e.target.value})}
+                />
+
+                <TextField 
+                    style={{
+                        marginTop: 8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}
+                    label="CC E-Mail *Optional"
+                    variant="filled" 
+                    value={mailTo.cc}
+                    onChange={(e) => setMailTo({...mailTo,cc: e.target.value})}
                 />
 
                 <Button
@@ -1013,6 +1072,13 @@ export default function ClientCertificate(props) {
             
         </Modal>  
 
+        {/* Note Modal */}
+        <Modal
+            open={noteModal}
+            onClose={handleNoteCancel}
+        >
+            <CertNote onCancel={handleNoteCancel} onConfirm={handleCertificateDirect} noteUpdate={setNote} id={directId}/>
+        </Modal>
     </>
 );
 }

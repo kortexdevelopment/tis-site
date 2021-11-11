@@ -96,9 +96,9 @@ export const Certificates = async(id) =>{
     return certificates;
 }
 
-export const NewCertificate = async(id) =>{
+export const NewCertificate = async(id, note) =>{
     try{
-        var result = await API.clientNewCertificate(id);
+        var result = await API.clientNewCertificate(id, note);
     }
     catch(e){
         console.error(`Controller Error : CERTIFICATES.NEW CERTIFICATE \n${e}`);
@@ -128,9 +128,9 @@ export const NewCertificatePdf = async(id) =>{
     return result;
 }
 
-export const SendMail = async(id, to) =>{
+export const SendMail = async(id, to, cc) =>{
     try{
-        var result = await API.sendCertMail(id, to);
+        var result = await API.sendCertMail(id, to, cc);
     }
     catch(e){
         console.error(`Controller Error : CERTIFICATES.SEND MAIL\n${e}`);
