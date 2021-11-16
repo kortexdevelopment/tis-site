@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/tis-site/static/css/main.6dea0f05.chunk.css",
-    "main.js": "/tis-site/static/js/main.f57cb235.chunk.js",
-    "main.js.map": "/tis-site/static/js/main.f57cb235.chunk.js.map",
+    "main.js": "/tis-site/static/js/main.bdcccfee.chunk.js",
+    "main.js.map": "/tis-site/static/js/main.bdcccfee.chunk.js.map",
     "runtime-main.js": "/tis-site/static/js/runtime-main.df3cd2d6.js",
     "runtime-main.js.map": "/tis-site/static/js/runtime-main.df3cd2d6.js.map",
     "static/js/2.a6eca837.chunk.js": "/tis-site/static/js/2.a6eca837.chunk.js",
@@ -16,6 +16,6 @@
     "static/js/runtime-main.df3cd2d6.js",
     "static/js/2.a6eca837.chunk.js",
     "static/css/main.6dea0f05.chunk.css",
-    "static/js/main.f57cb235.chunk.js"
+    "static/js/main.bdcccfee.chunk.js"
   ]
 }
