@@ -25,8 +25,7 @@ export default function CertNote(props){
             return;
         }
 
-        props.noteUpdate(note);
-        props.onConfirm(props.id);
+        props.onConfirm(props.id, note);
     }
     
     return(

@@ -267,12 +267,11 @@ export default function ClientCertificate(props) {
         setDirect(0);
     }
 
-    const handleCertificateDirect = async(id) => {
+    const handleCertificateDirect = async(id, notes) => {
         handleNoteClearance();
-
         doAction(false);
         try{
-            var result = await NewCertificate(id, note);
+            var result = await NewCertificate(id, notes);
         }
         catch(e){
             result = undefined;
@@ -1077,7 +1076,7 @@ export default function ClientCertificate(props) {
             open={noteModal}
             onClose={handleNoteCancel}
         >
-            <CertNote onCancel={handleNoteCancel} onConfirm={handleCertificateDirect} noteUpdate={setNote} id={directId}/>
+            <CertNote onCancel={handleNoteCancel} onConfirm={handleCertificateDirect} id={directId}/>
         </Modal>
     </>
 );
