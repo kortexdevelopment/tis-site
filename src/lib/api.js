@@ -1,19 +1,35 @@
 import * as HTTP from './http';
 
-// Create the pdf on Remote Server to avoid missing data
-export const byPassPdfCreation = async (lid) => {
-  let endpoint = "http://108.61.75.144/x-pek/tis/system/functions/api/mobile/createCertPdf.php?lid=" + lid;
-  let data = HTTP.GETV2(`${endpoint}`);
-  return data;
-}
-
-// Get the pdf in the Remote Server and overwrite to avoid missing data
-export const byPassPdf = async (lid) => {
-  let endpoint = `byPassPdf.php`;
-  let urlParams = `?lid=${lid}`
+// // Create the pdf on Remote Server to avoid missing data
+export const clientNewCertificate = async(id, note) => { 
+  let endpoint = `bk_clientNewCertificate.php`;
+  let urlParams = `?cid=${id}&note=${note}`
   let data = HTTP.GET(`${endpoint}${urlParams}`);
   return data;
 }
+
+// // Get the pdf in the Remote Server and overwrite to avoid missing data
+export const clientNewCertificatePdf = async(id) => { 
+  let endpoint = `byPassPdf.php`;
+  let urlParams = `?lid=${id}`
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+  return data;
+}
+
+// Code Backup
+// export const clientNewCertificate = async(id, note) => { 
+//   let endpoint = `clientNewCertificate.php`;
+//   let urlParams = `?cid=${id}&note=${note}`
+//   let data = HTTP.GET(`${endpoint}${urlParams}`);
+//   return data;
+// }
+// export const clientNewCertificatePdf = async(id) => { 
+//   let endpoint = `clientNewCertificatePdf.php`;
+//   let urlParams = `?lid=${id}`
+//   let data = HTTP.GET(`${endpoint}${urlParams}`);
+//   return data;
+// }
+
 
 export const agencyLogin = async(user, pass) => {
   let endpoint = `agencyLogin.php`;
@@ -353,25 +369,25 @@ export const clientRemoveCompany = async (info) => {
   return data;
 }
 
-export const clientNewCertificate = async(id, note) => { 
-  let endpoint = `clientNewCertificate.php`;
+// export const clientNewCertificate = async(id, note) => { 
+//   let endpoint = `clientNewCertificate.php`;
 
-  let urlParams = `?cid=${id}&note=${note}`
+//   let urlParams = `?cid=${id}&note=${note}`
 
-  let data = HTTP.GET(`${endpoint}${urlParams}`);
+//   let data = HTTP.GET(`${endpoint}${urlParams}`);
 
-  return data;
-}
+//   return data;
+// }
 
-export const clientNewCertificatePdf = async(id) => { 
-  let endpoint = `clientNewCertificatePdf.php`;
+// export const clientNewCertificatePdf = async(id) => { 
+//   let endpoint = `clientNewCertificatePdf.php`;
 
-  let urlParams = `?lid=${id}`
+//   let urlParams = `?lid=${id}`
 
-  let data = HTTP.GET(`${endpoint}${urlParams}`);
+//   let data = HTTP.GET(`${endpoint}${urlParams}`);
 
-  return data;
-}
+//   return data;
+// }
 
 export const applicationCreateLink = async (info) => {
   let endpoint = `applicationCreateLink.php`;
