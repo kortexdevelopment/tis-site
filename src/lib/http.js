@@ -53,3 +53,14 @@ export const POSTFORM = async (endpoint, formData) => {
 
   return json;
 }
+
+// GETV2 bypass the API_URL and allows custom hardcode url
+export const GETV2 = async (endpoint) => {
+  let requestEndpoint = endpoint;
+  let response = await fetch(`${requestEndpoint}`);
+  if (!response.ok){
+     throw new Error(`HTTP_NOT_OK: ${await response.text()}`);
+  }
+  let json = response.json();
+  return json;
+}
