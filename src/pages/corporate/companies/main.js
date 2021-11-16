@@ -52,7 +52,6 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor:'#777777',
   },
 }));
-
 // 3973E5 primary
 // A5C0F3 secondary
 // FF0000 red
@@ -73,16 +72,8 @@ export function Main(props) {
 
     const [edit, showEdit] = React.useState(false);
     const [editCompany, setEdit] = React.useState(undefined);
-
     React.useEffect(() => {
-        if(!loadInfo){
-            return;
-        }
-
-        handleLoading();
-    });
-
-    React.useEffect(() => {
+        !loadInfo || handleLoading();
         showEdit(editCompany !== undefined);
     }, [editCompany]);
 
@@ -90,22 +81,17 @@ export function Main(props) {
         return params.getValue(params.id, 'id');
     }
 
-    const handleLoading = async() =>{
-        try{
-            var result = await API.Companies();
-        }
-        catch(e){
-            result = undefined;
-        }
-
-        if(result === undefined){
-            didError(true);
-            return;
-        }
-
-        setCompanies(result);
-        setOriginal(result);
+    const handleLoading = async() =>{    
         isLoading(false);
+        var result = await API.Companies() || false;
+
+        if(!result){
+            didError(true);
+        }
+        else{
+            setCompanies(result);
+            setOriginal(result);
+        }
     }
 
     const handleCreationClose = async() => {
