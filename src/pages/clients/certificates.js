@@ -272,7 +272,7 @@ export default function ClientCertificate(props) {
 
         doAction(false);
         try{
-            var result = await NewCertificate(id);
+            var result = await NewCertificate(id, note);
         }
         catch(e){
             result = undefined;
