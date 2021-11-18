@@ -34,7 +34,7 @@ export const clientNewCertificatePdf = async(id) => {
 export const agencyLogin = async(user, pass) => {
   let endpoint = `agencyLogin.php`;
 
-  let urlParams = `?user=${user}&pass=${pass}`
+  let urlParams = `?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`
 
   let data = HTTP.GET(`${endpoint}${urlParams}`);
 
