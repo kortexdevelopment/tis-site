@@ -16,6 +16,19 @@ export const clientNewCertificatePdf = async(id) => {
   return data;
 }
 
+export const changePasswd = async(enteredPasswd, userId) => {
+  let endpoint = `changePasswd.php`;
+  let urlParams = `?uid=${userId}&enc=${enteredPasswd}`
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+  return data;
+}
+export const changePasswdApp = async(enteredPasswd, userId) => {
+  let endpoint = `changePasswdApp.php`;
+  let urlParams = `?uid=${userId}&enc=${enteredPasswd}`
+  let data = HTTP.GET(`${endpoint}${urlParams}`);
+  return data;
+}
+
 // Code Backup
 // export const clientNewCertificate = async(id, note) => { 
 //   let endpoint = `clientNewCertificate.php`;

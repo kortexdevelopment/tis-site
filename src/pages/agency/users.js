@@ -25,6 +25,8 @@ import {Agents, NewAgent, RemoveAgent} from '../../controllers/agencyUsers';
 import UsersEdit from './edits/users';
 import Searcher from '../../components/search';
 
+import * as API from '../../lib/api';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -70,6 +72,8 @@ export default function AgencyUsers() {
     const [original, setOriginal] = React.useState([]);
 
     const [newUser, doNew] = React.useState(false);
+
+
     const [newName, setName] = React.useState('');
     const [newMail, setMail] = React.useState('');
     const [newPass, setPass] = React.useState('');
@@ -79,6 +83,10 @@ export default function AgencyUsers() {
 
     const [edit, showEdit] = React.useState(false);
     const [editUser, setEdit] = React.useState(undefined);
+
+    const [newPassword, doNewPassword] = React.useState(false);
+    const [psswd, setPsswd] = React.useState('');
+    const [psswdConfirm, setPsswdConfirm] = React.useState('');
 
     React.useEffect(() => {
         if(!loadInfo){
@@ -228,6 +236,32 @@ export default function AgencyUsers() {
         setEdit(undefined);
     }
 
+    const changePassword = async() =>
+    {        
+        if(psswd !== psswdConfirm)
+        {
+            alert('Password must match');
+            return;
+        }
+        else
+        {
+            try{
+                var result = await API.changePasswd(psswd, session.userId);
+                if(result.result)
+                    window.alert("Password successfully modified.");
+                else
+                    window.alert("An error ocurred, please try again in a couple of minutes.");
+            }
+            catch(e){
+                console.error(`Controller Error : AGENCY.NEW AGENT \n${e}`);
+                return undefined;
+            }
+        }
+        doNewPassword(false);
+        setPsswd('');
+        setPsswdConfirm('');
+    }
+
   return (
     <>
         <div className={classes.root}>
@@ -330,7 +364,32 @@ export default function AgencyUsers() {
                         {field: 'id', headerName: 'ID', headerClassName: classes.gridHeader, flex: 1, hide: true},
                         {field: 'name', headerName: 'NAME', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'mail', headerName: 'ACCESS E-MAIL', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'pass', headerName: 'ACCESS PASS', headerClassName: classes.gridHeader, flex: 1},
+                        {field: 'pass', headerName: 'ACCESS PASS', headerClassName: classes.gridHeader, flex: 1, renderCell: (params) =>(
+                            <>
+                                <Box
+                                    style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-evenly',
+                                        width: '100%',
+                                    }}
+                                >
+                                    <Button
+                                        style={{
+                                            width:"200px",
+                                            marginTop: 8,
+                                            marginBottom: 8,
+                                            marginLeft: 0,
+                                            backgroundColor: '#3973E5',
+                                            color: '#FFFFFF'
+                                        }}
+
+                                        onClick={() => doNewPassword(true)}
+                                    >
+                                        Change Password
+                                    </Button>
+                                </Box>
+                            </>
+                        )},
                         {field: 'levelLabel', headerName: 'ACCESS LEVEL', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'action', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 1, sortable: false,
                             valueGetter: idGetter,
@@ -505,7 +564,80 @@ export default function AgencyUsers() {
         >
             <UsersEdit onCancel={handleEditCancel} onSuccess={handleEditSuccess} user={editUser} />
         </Modal>      
+        <Modal
+                    open={newPassword}
+                    onClose={() => {
+                        doNewPassword(false);
+                        setPsswd('');
+                        setPsswdConfirm('');
+                    }}
+                    aria-labelledby="simple-modal-title"
+                    aria-describedby="simple-modal-description"
+                    >
+    <Box
+                style={{
+                    position: 'absolute',
+                    top: '10%',
+                    left: '40%',
+                    width: '40%',
+                    backgroundColor: '#FFFFFF',
+                    display: 'flex',
+                    flexDirection: 'column',
+                }}
+            >
+                <AppBar position="static">
+                    <Toolbar 
+                        variant="dense"
+                        style={{
+                            backgroundColor:'#3973E5'
+                        }}
+                    >
+                        <Typography variant="h6" color="inherit">
+                            Change Password
+                        </Typography>
+                    </Toolbar>
+                </AppBar>
+                <TextField 
+                    style={{
+                        marginTop: 8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}
+                    label="Password"
+                    variant="filled" 
+                    type='password'
+                    value={psswd}
+                    onChange={(e) => setPsswd(e.target.value)}
+                />
 
+                <TextField 
+                    type='password'
+                    style={{
+                        marginTop: 8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                    }}
+                    label="Confirm Password"
+                    variant="filled"
+                    value={psswdConfirm}
+                    onChange={(e) => setPsswdConfirm(e.target.value)}
+                />
+                <Button
+                    style={{
+                        marginTop: 8,
+                        marginBottom: 8,
+                        marginLeft: 15,
+                        marginRight: 15,
+                        backgroundColor: '#3973E5',
+                        color: '#FFFFFF'
+                    }}
+
+                    onClick={changePassword}
+                >
+                    Change Password
+                </Button>
+            </Box>
+                </Modal> 
     </>
   );
 }
