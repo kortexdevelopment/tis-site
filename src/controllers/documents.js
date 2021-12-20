@@ -37,7 +37,7 @@ export const List = async(id) =>{
             id: list[i][0],
             file: list[i][2],
             name: list[i][3],
-            type: Number(list[i][4]) === 1 ? 'Aviable' : 'Not aviable',
+            type: Number(list[i][4]) === 1 ? 'Available' : 'Not available',
         }
 
         documents.push(document);

@@ -29,6 +29,18 @@ export const changePasswdApp = async(enteredPasswd, userId) => {
   return data;
 }
 
+// Remove Client
+
+export const RemoveClient = async(params) => {
+  let parameters = {
+    class : "Clients",
+    method : "delete",
+    params : params
+  };
+  let data = HTTP.GET("loader.php?data="+JSON.stringify(parameters));
+  return data;
+}
+
 // Code Backup
 // export const clientNewCertificate = async(id, note) => { 
 //   let endpoint = `clientNewCertificate.php`;

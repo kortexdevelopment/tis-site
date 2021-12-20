@@ -942,7 +942,7 @@ export default function ClientCertificate(props) {
                             }}
                         >
                             <Typography variant="h6" color="inherit">
-                                CERTIFICATE VIWER
+                                CERTIFICATE VIEWER
                             </Typography>
 
                             <Box

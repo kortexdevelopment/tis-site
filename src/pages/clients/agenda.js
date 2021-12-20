@@ -13,6 +13,9 @@ import IconButton from '@material-ui/core/IconButton';
 import AddCircleRoundedIcon from '@material-ui/icons/AddCircleRounded';
 import RecentActorsIcon from '@material-ui/icons/RecentActors';
 
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+
+
 import Modal from '@material-ui/core/Modal';
 import { Button } from '@material-ui/core';
 import TextField from '@material-ui/core/TextField';
@@ -22,6 +25,8 @@ import FormControl from '@material-ui/core/FormControl';
 
 import {Agenda, NewClient} from '../../controllers/agency';
 import Searcher from '../../components/search';
+
+import * as API from '../../lib/api';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -155,6 +160,24 @@ export default function ClientAgenda(props) {
         return params.getValue(params.id, 'id');
     }
 
+    const removeMe = async (params) => {
+        var remove = window.confirm("This action can't be reverted. It is safe to remove: '" + params.row.nameF + "' ?");
+        if(remove)
+        {
+            try{
+                var result = await API.RemoveClient(params.row);
+            }
+            catch(e){
+                result = undefined;
+            }
+            if(result)
+            {
+                window.alert(JSON.parse(result.data).result);
+                handleLoading();
+            }
+        }
+    }
+
   return (
     <>
         <div className={classes.root}>
@@ -260,7 +283,7 @@ export default function ClientAgenda(props) {
                         {field: 'bsn', headerName: 'B.S.N.', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'phone', headerName: 'PHONE', headerClassName: classes.gridHeader, flex: 1},
                         {field: 'mail', headerName: 'E-MAIL', headerClassName: classes.gridHeader, flex: 1},
-                        {field: 'action ', headerName: '    ACTIONS', headerClassName: classes.gridHeader, flex: 0.8, sortable: false, 
+                        {field: 'action ', headerName: 'ACTIONS', headerClassName: classes.gridHeader, flex: 0.8, sortable: false, 
                             valueGetter: idGetter,
                             renderCell: (params) =>(
                                 <>
@@ -289,6 +312,40 @@ export default function ClientAgenda(props) {
                                 </>
                             ),
                             }
+                            ,
+                            {field: 'delete', headerName: 'DELETE', headerClassName: classes.gridHeader, flex: 1, sortable: false, 
+                            valueGetter: idGetter,
+                            renderCell: (params) =>(
+                                <>
+                                    <Box
+                                        style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-evenly',
+                                            width: '100%',
+                                        }}
+                                    >
+                                        <IconButton
+                                            aria-label="VIEW PROFILE" 
+                                            component="span"
+                                            style={{
+                                                color:'#3973E5',
+                                                marginRight: 12,
+                                                fontSize: 15,
+                                            }}
+                                            onClick={
+                                                () => 
+                                                removeMe(params)
+                                                // () => props.onClient(params.value)
+                                            }
+                                        >   
+                                            <DeleteForeverIcon fontSize='large'/>
+                                        </IconButton>
+                                    </Box>
+                                </>
+                            ),
+                        
+                        },
+
                         ]} 
 
                     rows={agenda}

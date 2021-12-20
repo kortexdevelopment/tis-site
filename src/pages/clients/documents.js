@@ -433,7 +433,7 @@ export default function ClientDocs(props) {
                 >
                     <FormControlLabel
                         control={<Switch checked={client} onChange={(e) => setClient(e.target.checked)} color='primary'/>}
-                        label="Aviable to Client in App"
+                        label="Available to Client in App"
                     />
                 </FormControl>
 
